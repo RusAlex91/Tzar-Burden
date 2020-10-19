@@ -2391,17 +2391,23 @@ const showresources = setInterval(() => {
 
 
 
-function insertAnimations() {
 
+function unitCreateAnimations(unit, action) {
+    var direction = ["s", "se", "e", "ne", "n", "nw", "w", "sw"]
     var sheet = window.document.styleSheets[1];
-    sheet.insertRule(`.${unit}-${action}-${direction} {
-        background-image: url("units/${unit}/${action}/${direction}.gif") !important;
+    for (let i = 0; i < 8; i++) {
+        sheet.insertRule(`.${unit}-${action}-${direction[i]} {
+        background-image: url("units/${unit}/${action}/${direction} (1).gif") !important;
         background-repeat: no-repeat;
     }
     `, sheet.cssRules.length);
-    unitsNow++
+    }
 
-    let humanArmy = document.getElementsByClassName(genName)[0];
-    // armyMovements.movement_left(humanArmy);
-    console.log("created");
+}
+
+function insertAnimations() {
+    var units = Object.keys(unitsReserve)
+    for (unit of units) {
+        unitCreateAnimations(unit, "idle")
+    }
 }
