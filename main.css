@@ -1,0 +1,612 @@
+body {
+    background: whitesmoke;
+}
+
+.battlefield {}
+
+.create-unit {
+    margin-top: 60px;
+}
+
+.ally_army_spot {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border: 1px solid black;
+    left: 550px;
+    top: 600px;
+}
+
+.interface-top {
+    z-index: 3;
+    position: sticky;
+    top: 0;
+    width: 1505px;
+    height: 120px;
+    margin-left: 150px;
+    background-image: url("interface/lefttop.png");
+    background-repeat: no-repeat;
+}
+
+.interface-left {
+    position: sticky;
+    top: 0;
+    float: left;
+    z-index: 2;
+    margin-top: -120px;
+    width: 180px;
+    height: 2080px;
+    background-image: url("interface/leftmain.png");
+    background-repeat: no-repeat;
+}
+
+.barracks-icon {
+    position: relative;
+    top: 336px;
+    left: 19px;
+}
+
+.castle-interface {
+    position: relative;
+    top: 336px;
+    left: 19px;
+}
+
+.counter {
+    position: absolute;
+    color: whitesmoke;
+    font-size: 40px;
+    opacity: 0.9;
+    /* -webkit-text-stroke: 1px gray; */
+}
+
+.count-footman {
+    left: 6px;
+}
+
+.count-archer {
+    left: 66px;
+}
+
+.count-maseman {
+    top: 55px;
+    left: 6px;
+}
+
+.count-longbowman {
+    top: 55px;
+    left: 66px;
+}
+
+.icon {
+    width: 48px;
+    height: 48px;
+}
+
+.barracks-interface {
+    position: relative;
+    top: 336px;
+    left: 19px;
+    display: flex;
+    flex-direction: column;
+}
+
+.tier-1 {}
+
+.tier-2 {}
+
+.tier-1-castle img:first-child {
+    position: absolute;
+    top: 0px;
+    opacity: 0.7;
+}
+
+.tier-1-castle img:nth-child(3) {
+    position: absolute;
+    left: 62px;
+    opacity: 0.7;
+}
+
+.tier-2-castle img:first-child {
+    position: absolute;
+    top: 57px;
+    opacity: 0.7;
+}
+
+.tier-2-castle img:nth-child(3) {
+    position: absolute;
+    left: 62px;
+    top: 57px;
+}
+
+.tier-1 img:first-child {
+    position: absolute;
+    top: 0px;
+}
+
+.tier-1 img:nth-child(2) {
+    position: absolute;
+    left: 62px;
+}
+
+.tier-2 img:first-child {
+    position: absolute;
+    top: 57px;
+}
+
+.tier-2 img:nth-child(2) {
+    position: absolute;
+    left: 62px;
+    top: 57px;
+}
+
+.buildings-wrapper {}
+
+.hidden {
+    /* visibility: hidden; */
+    display: none;
+}
+
+.resources {}
+
+.gold {
+    position: absolute;
+    left: 215px;
+    -webkit-user-select: none;
+}
+
+.wood {
+    position: absolute;
+    left: 315px;
+    -webkit-user-select: none;
+}
+
+.food {
+    position: absolute;
+    left: 405px;
+    -webkit-user-select: none;
+}
+
+.stone {
+    position: absolute;
+    left: 500px;
+    -webkit-user-select: none;
+}
+
+.units {
+    position: absolute;
+    left: 590px;
+    -webkit-user-select: none;
+}
+
+.gold,
+.wood,
+.stone,
+.food,
+.units {
+    width: 35px;
+    height: 15px;
+    /* border: 1px solid palegoldenrod; */
+    color: white;
+    opacity: 0.9;
+}
+
+.barracks-icon:hover {
+    border: 1px solid transparent;
+}
+
+.footman-icon:hover,
+.archer-icon:hover,
+.maseman-icon:hover,
+.longbowman-icon:hover {
+    border: 1px solid transparent;
+}
+
+.footman-icon:active,
+.archer-icon:active,
+.maseman-icon:active,
+.longbowman-icon:active {
+    border: 1px solid gainsboro;
+    opacity: 0.8;
+}
+
+.footman-icon:focus,
+.archer-icon:focus,
+.maseman-icon:focus,
+.longbowman-icon:focus {
+    border: 1px solid gainsboro;
+    opacity: 0.8;
+}
+
+.barracks-icon:active {
+    border: 1px solid gainsboro;
+    opacity: 0.8;
+}
+
+.barracks-icon:focus {
+    border: 1px solid gainsboro;
+    opacity: 0.8;
+}
+
+.wrapper-main {
+    z-index: 1;
+    position: relative;
+    top: -120px;
+    left: -90px;
+    padding-top: 25px;
+    padding-right: 110px;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: column-reverse;
+    align-items: center;
+}
+
+.border {
+    position: relative;
+    width: 1500px;
+    height: 1600px;
+    background-image: url('new battlefild.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.battlefield {
+    min-width: 1200px;
+    width: 1200px;
+    height: 1600px;
+}
+
+.mainLands {
+    min-width: 1200px;
+    width: 1200px;
+    height: 1600px;
+}
+
+.vampire1_tower_enemy0 {
+    /* margin-top: 25px; */
+    height: 50px;
+    width: 27px;
+    /* 	  animation: footman_attack 1s infinite; */
+    background-image: url("ork.png");
+}
+
+.archer_attack_area {
+    position: absolute;
+    width: 100px;
+    height: 40px;
+    right: 40px;
+    border: 1px solid red;
+}
+
+.tower_attack_area {
+    position: absolute;
+    width: 150px;
+    height: 150px;
+    right: -70px;
+    top: -50px;
+    border: 1px solid red;
+}
+
+
+/* spots */
+
+.spot0 {
+    top: 780px;
+    left: 630px;
+    position: absolute;
+    cursor: pointer;
+}
+
+.spot0-active {
+    content: url("Buildings/EURO CASTLE-highlighted.png");
+}
+
+.spot1 {
+    top: 700px;
+    left: 290px;
+    position: absolute;
+}
+
+.spot2 {
+    top: 1000px;
+    left: 300px;
+    position: absolute;
+}
+
+.spot3 {
+    top: 800px;
+    left: 600px;
+    position: absolute;
+}
+
+.spot4 {
+    top: 800px;
+    left: 450px;
+    position: absolute;
+}
+
+.possible-barracks {
+    content: url("Buildings/Barracks.png");
+}
+
+.grayscale {
+    filter: grayscale(100%);
+}
+
+.buildProsesessBig_stadia1 {
+    content: url("Buildings/5x5/big (1).png");
+}
+
+.buildProsesessBig_stadia2 {
+    content: url("Buildings/5x5/big (2).png");
+}
+
+.buildProsesessBig_stadia3 {
+    content: url("Buildings/5x5/big (3).png");
+}
+
+.buildProsesessBig_stadia4 {
+    content: url("Buildings/5x5/big (4).png");
+}
+
+.barracks-complete {
+    content: url("Buildings/Barracks.png");
+}
+
+.barracks-complete-highlighted {
+    content: url("Buildings/Barracks-highlighted.png");
+}
+
+.barracks-complete:hover {
+    cursor: pointer;
+}
+
+
+/* units animations */
+
+
+/* worker */
+
+.worker-idle-top {
+    background-image: url("worker/idle/h5.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.worker-build-top {
+    background-image: url("worker/build/h5.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.worker-walk-left {
+    background-image: url("worker/walk/h3.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.worker-idle-left {
+    background-image: url("worker/idle/h3.gif") !important;
+    background-repeat: no-repeat;
+}
+
+
+/* footman */
+
+
+/* idle */
+
+.footman-idle-s {
+    background-image: url("units/footman/idle/h.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-idle-se {
+    background-image: url("units/footman/idle/h2.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-idle-e {
+    background-image: url("units/footman/idle/h3.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-idle-ne {
+    background-image: url("units/footman/idle/h4.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-idle-n {
+    background-image: url("units/footman/idle/h5.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-idle-nw {
+    background-image: url("units/footman/idle/h6.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-idle-w {
+    background-image: url("units/footman/idle/h7.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-idle-sw {
+    background-image: url("units/footman/idle/h8.gif") !important;
+    background-repeat: no-repeat;
+}
+
+
+/* footman */
+
+
+/* walk */
+
+.footman-walk-s {
+    background-image: url("units/footman/walk/h.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-walk-se {
+    background-image: url("units/footman/walk/h2.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-walk-e {
+    background-image: url("units/footman/walk/h3.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-walk-ne {
+    background-image: url("units/footman/walk/h4.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-walk-n {
+    background-image: url("units/footman/walk/h5.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-walk-nw {
+    background-image: url("units/footman/walk/h6.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-walk-w {
+    background-image: url("units/footman/walk/h7.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-walk-sw {
+    background-image: url("units/footman/walk/h8.gif") !important;
+    background-repeat: no-repeat;
+}
+
+
+/* footman */
+
+
+/*attack */
+
+.footman-attack-s {
+    background-image: url("units/footman/attack/h.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-attack-se {
+    background-image: url("units/footman/attack/h2.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-attack-e {
+    background-image: url("units/footman/attack/h3.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-attack-ne {
+    background-image: url("units/footman/attack/h4.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-attack-n {
+    background-image: url("units/footman/attack/h5.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-attack-nw {
+    background-image: url("units/footman/attack/h6.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-attack-w {
+    background-image: url("units/footman/attack/h7.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-attack-sw {
+    background-image: url("units/footman/attack/h8.gif") !important;
+    background-repeat: no-repeat;
+}
+
+
+/*attack */
+
+.footman-attack2-s {
+    background-image: url("units/footman/attack2/h.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-attack2-se {
+    background-image: url("units/footman/attack2/h2.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-attack2-e {
+    background-image: url("units/footman/attack2/h3.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-attack2-ne {
+    background-image: url("units/footman/attack2/h4.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-attack2-n {
+    background-image: url("units/footman/attack2/h5.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-attack2-nw {
+    background-image: url("units/footman/attack2/h6.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-attack2-w {
+    background-image: url("units/footman/attack2/h7.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-attack2-sw {
+    background-image: url("units/footman/attack2/h8.gif") !important;
+    background-repeat: no-repeat;
+}
+
+
+/*die */
+
+.footman-die-s {
+    background-image: url("units/footman/die/h.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-die-se {
+    background-image: url("units/footman/die/h2.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-die-e {
+    background-image: url("units/footman/die/h3.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-die-ne {
+    background-image: url("units/footman/die/h4.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-die-n {
+    background-image: url("units/footman/die/h5.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-die-nw {
+    background-image: url("units/footman/die/h6.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-die-w {
+    background-image: url("units/footman/die/h7.gif") !important;
+    background-repeat: no-repeat;
+}
+
+.footman-die-sw {
+    background-image: url("units/footman/die/h8.gif") !important;
+    background-repeat: no-repeat;
+}
