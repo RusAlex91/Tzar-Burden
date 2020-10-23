@@ -59,7 +59,7 @@ var unitLimit = 0;
 var unitsNow = document.getElementsByClassName("ally").length;
 var enemyUnitsNow = document.getElementsByClassName("enemy").length;
 
-function createFakeUnit(unit, y, x) {
+function createFakeUnit(unit, y, x, side) {
     var genName = `human${unitsNow}`
     var sheet = window.document.styleSheets[1];
     sheet.insertRule(`.human${unitsNow} {
@@ -75,17 +75,16 @@ function createFakeUnit(unit, y, x) {
     sheet.insertRule(`.human${unitsNow}:hover {border: 1px solid blue;;}
         `, sheet.cssRules.length);
     sheet.insertRule(`.human${unitsNow}_${unit}_ally0 {
-        position: relative;
-        height: 40px;
-        width: 35px;
-        background-image: url("units/${unit}/idle/h.gif");
-        background-repeat: no-repeat;}
+        
+        
+ 
+    }
             `, sheet.cssRules.length);
     unitsNow++
     var human = new Army(genName, unit, "ally");
 
     human.create("mainLands");
-    human.addSoldier();
+    human.addFakeSoldier();
 
     let humanArmy = document.getElementsByClassName(genName)[0];
     // armyMovements.movement_left(humanArmy);
@@ -1200,6 +1199,30 @@ class Army {
         let parent = document.getElementsByClassName(this.name)[0];
         parent.append(area);
     }
+
+    addFakeSoldier(name, type, allign) {
+        let armyName = `${this.name} ${this.type} ${this.allign}`;
+        let soldier = document.createElement("img");
+        let soldierCountName = `${this.allign}_${this.name}_${this.type}_soldiers`;
+        let soldier_count = armies[armyName][soldierCountName];
+        soldier.className = `${this.name}_${this.type}_${this.allign}${soldier_count} ${this.name}_${this.type}`;
+        let parent = document.getElementsByClassName(this.name)[0];
+        parent.append(soldier);
+        let trueName = this.name.substring(0, this.name.length - 1);
+        let armyName_initial_hp = `${this.allign}_${this.name}_${this.type}_initial_hp`;
+        let armyName_hp = `${this.allign}_${this.name}_${this.type}_hp`;
+        let armyName_dmg = `${this.allign}_${this.name}_${this.type}_dmg`;
+
+        let soldierName_hp = `${trueName}_${this.type}_hp`;
+        let soldierName_dmg = `${trueName}_${this.type}_dmg`;
+        armies[armyName][armyName_initial_hp] =
+            armies[armyName][armyName_initial_hp] + sourseSoldiers[soldierName_hp];
+        armies[armyName][armyName_hp] = armies[armyName][armyName_hp] + sourseSoldiers[soldierName_hp];
+        armies[armyName][armyName_dmg] =
+            armies[armyName][armyName_dmg] + sourseSoldiers[soldierName_dmg];
+        armies[armyName][soldierCountName] = armies[armyName][soldierCountName] + 1;
+    }
+
 }
 
 var armyMovements = {
@@ -1827,12 +1850,14 @@ function barracksHireListner(event) {
         event.currentTarget.classList.add("selected")
         alreadySelected = true;
         if (event.currentTarget.classList[1] == "spot1") {
+            if (!buildUnitLock) {
 
-            barracksHire.footman(event.currentTarget.classList[1], elBarracksLocks.spot1)
-            barracksHire.maseman(event.currentTarget.classList[1], elBarracksLocks.spot1)
-            barracksHire.archer(event.currentTarget.classList[1], elBarracksLocks.spot1)
-            barracksHire.longbowman(event.currentTarget.classList[1], elBarracksLocks.spot1)
 
+                barracksHire.footman(event.currentTarget.classList[1], elBarracksLocks.spot1)
+                barracksHire.maseman(event.currentTarget.classList[1], elBarracksLocks.spot1)
+                barracksHire.archer(event.currentTarget.classList[1], elBarracksLocks.spot1)
+                barracksHire.longbowman(event.currentTarget.classList[1], elBarracksLocks.spot1)
+            }
         } else if (event.currentTarget.classList[1] == "spot2") {
             console.log("second barracks listners")
             barracksHire.footman(event.currentTarget.classList[1], elBarracksLocks.spot2)
@@ -1915,7 +1940,7 @@ mainWindow.addEventListener("click", function(event) {
         // }
         barracks.classList.remove("barracks-complete-highlighted")
         barracks.classList.remove("selected")
-
+        removeEventListener(footmanBtn)
         alreadySelected = false;
     }
 
@@ -1961,33 +1986,82 @@ var elBarracksLocks = {
 
 
 var barracksHire = {
-    footman: function(spot, lock) {
+    footman: function(spot) {
         var man = `footman-icon-${spot}`
         var footmanBtn = document.getElementsByClassName(man)[0]
 
         footmanBtn.addEventListener("click", function(event) {
             console.log("footman created")
-            if (spot == "spot1" && lock == false) {
-                createFakeUnit("footman", pointsToBuilding.medium1.topPoint, pointsToBuilding.medium1.leftPoint)
+            if (spot == "spot1" && buildUnitLock == false) {
+                let unit = "footman"
+                createFakeUnit(unit, pointsToBuilding.medium1.topPoint, pointsToBuilding.medium1.leftPoint, "e")
+                let name = `human${unitsNow-1}_${unit}_ally0`
+                let man = document.getElementsByClassName(name)[0]
+                man.classList.add(`${unit}-idle-s`);
                 event.stopPropagation()
                 elBarracksLocks.spot1 = true;
                 startIntervalRevUnit(event, pointsToCastle.medium1.leftPoint, pointsToCastle.medium1.topPoint, "footman")
-            } else if (spot == "spot2" && lock == false) {
+            } else if (spot == "spot2" && buildUnitLock == false) {
+
+            }
+        })
+    },
+    archer: function(spot, lock) {
+        var man = `archer-icon-${spot}`
+        var footmanBtn = document.getElementsByClassName(man)[0]
+
+        footmanBtn.addEventListener("click", function(event) {
+            console.log("archer created")
+            if (spot == "spot1" && buildUnitLock == false) {
+                createFakeUnit("archer", pointsToBuilding.medium1.topPoint, pointsToBuilding.medium1.leftPoint)
+                event.stopPropagation()
+                elBarracksLocks.spot1 = true;
+                startIntervalRevUnit(event, pointsToCastle.medium1.leftPoint, pointsToCastle.medium1.topPoint, "archer")
+            } else if (spot == "spot2" && buildUnitLock == false) {
                 console.log("а вот это уже другая история")
-                createFakeUnit("footman", pointsToCastle.medium1.topPoint, pointsToCastle.medium1.leftPoint)
+                createFakeUnit("archer", pointsToCastle.medium1.topPoint, pointsToCastle.medium1.leftPoint)
                 event.stopPropagation()
                 elBarracksLocks.spot2 = true;
             }
         })
     },
-    archer: function(spot) {
+    maseman: function(spot, lock) {
+        var man = `maseman-icon-${spot}`
+        var footmanBtn = document.getElementsByClassName(man)[0]
 
+        footmanBtn.addEventListener("click", function(event) {
+            console.log("maseman created")
+            if (spot == "spot1" && buildUnitLock == false) {
+                createFakeUnit("maseman", pointsToBuilding.medium1.topPoint, pointsToBuilding.medium1.leftPoint)
+                event.stopPropagation()
+                elBarracksLocks.spot1 = true;
+                startIntervalRevUnit(event, pointsToCastle.medium1.leftPoint, pointsToCastle.medium1.topPoint, "maseman")
+            } else if (spot == "spot2" && buildUnitLock == false) {
+                console.log("а вот это уже другая история")
+                createFakeUnit("maseman", pointsToCastle.medium1.topPoint, pointsToCastle.medium1.leftPoint)
+                event.stopPropagation()
+                elBarracksLocks.spot2 = true;
+            }
+        })
     },
-    maseman: function(spot) {
+    longbowman: function(spot, lock) {
+        var man = `longbowman-icon-${spot}`
+        var footmanBtn = document.getElementsByClassName(man)[0]
 
-    },
-    longbowman: function(spot) {
-
+        footmanBtn.addEventListener("click", function(event) {
+            console.log("longbowman created")
+            if (spot == "spot1" && buildUnitLock == false) {
+                createFakeUnit("longbowman", pointsToBuilding.medium1.topPoint, pointsToBuilding.medium1.leftPoint)
+                event.stopPropagation()
+                elBarracksLocks.spot1 = true;
+                startIntervalRevUnit(event, pointsToCastle.medium1.leftPoint, pointsToCastle.medium1.topPoint, "longbowman")
+            } else if (spot == "spot2" && buildUnitLock == false) {
+                console.log("а вот это уже другая история")
+                createFakeUnit("longbowman", pointsToCastle.medium1.topPoint, pointsToCastle.medium1.leftPoint)
+                event.stopPropagation()
+                elBarracksLocks.spot2 = true;
+            }
+        })
     }
 }
 
@@ -2054,7 +2128,7 @@ var barracksBuildingSites = document.querySelectorAll("img.building-medium_img")
 
             showBarracksImg()
             createWorker(pointsToCastle.medium1.topPoint,
-                pointsToCastle.medium1.leftPoint)
+                pointsToCastle.medium1.leftPoint, "w")
             startIntervalPeasant(e, pointsToBuilding.medium1.leftPoint, pointsToBuilding.medium1.topPoint)
             buildBig = true;
         }
@@ -2066,7 +2140,7 @@ var barracksBuildingSites = document.querySelectorAll("img.building-medium_img")
 
 
 
-function createWorker(y, x) {
+function createWorker(y, x, position) {
     var genName = `human${unitsNow}`
     var sheet = window.document.styleSheets[1];
     sheet.insertRule(`.human${unitsNow} {
@@ -2087,7 +2161,7 @@ function createWorker(y, x) {
         position: relative;
         height: 40px;
         width: 40px;
-        background-image: url("worker/walk/h7.gif");
+        background-image: url("units/worker/walk/${position} (1).gif");
         background-repeat: no-repeat;
         }
             `, sheet.cssRules.length);
@@ -2159,17 +2233,18 @@ function movementtest(leftPoint, topPoint, event, unit) {
                 armyMovements.movement_left(human)
                 armyMovements.movement_top(human, movementPoint1Top)
             } else {
-                humanImage.classList.add("worker-idle-top");
+
+                humanImage.classList.add("worker-idle-n");
                 setTimeout(() => {
-                    humanImage.classList.remove("worker-idle-top");
-                    humanImage.classList.add("worker-build-top");
+                    humanImage.classList.remove("worker-idle-n");
+                    humanImage.classList.add("worker-build-n");
                     canBuild(event)
                     setTimeout(() => {
-                        humanImage.classList.add("worker-idle-top");
-                        humanImage.classList.remove("worker-build-top");
+                        humanImage.classList.add("worker-idle-n");
+                        humanImage.classList.remove("worker-build-n");
                         setTimeout(() => {
-                            humanImage.classList.add("worker-walk-left");
-                            humanImage.classList.remove("worker-idle-top");
+                            humanImage.classList.add("worker-walk-e");
+                            humanImage.classList.remove("worker-idle-n");
                         }, 66);
                     }, 5000);
                 }, 1000);
@@ -2188,7 +2263,7 @@ function movementtest(leftPoint, topPoint, event, unit) {
 
 function startIntervalRevUnit(event, left, top, unit) {
     // Store the id of the interval so we can clear it later
-    intervalId = setInterval(movementUnitReverse.bind(window, left, top, unit), 66);
+    intervalIdUnit = setInterval(movementUnitReverse.bind(window, left, top, unit), 66);
 }
 
 // function startIntervalUnit(event, left, top, unit) {
@@ -2244,11 +2319,23 @@ var unitsReserveTotal = 0;
 var unitsReserve = {
     footman: {
         count: 0
+    },
+    archer: {
+        count: 0
+    },
+    maseman: {
+        count: 0
+    },
+    longbowman: {
+        count: 0
     }
 }
 
+var buildUnitLock = false;
+
 function movementUnitReverse(leftPoint, topPoint, unit) {
     // console.log(unitsNow)
+    buildUnitLock = true;
     var movementPointLeft1 = leftPoint;
     var movementPoint1Top = topPoint;
     loop1:
@@ -2265,6 +2352,7 @@ function movementUnitReverse(leftPoint, topPoint, unit) {
 
             if (!movementAC.wait) {
                 movementAC.wait = true;
+                humanImage.classList.remove(`${unit}-idle-s`);
                 humanImage.classList.add(`${unit}-idle-se`);
             }
 
@@ -2272,13 +2360,14 @@ function movementUnitReverse(leftPoint, topPoint, unit) {
                 if (!movementAC.left) {
                     movementAC.left = true;
                     humanImage.classList.add(`${unit}-walk-e`);
+                    humanImage.classList.remove(`${unit}-idle-se`);
                 }
                 armyMovements.movement_right(human)
                 armyMovements.movement_top(human, movementPoint1Top)
             } else if (leftNumber >= movementPointLeft1 && movementPointLeft1 <= leftNumber) {
                 humanImage.classList.remove(`${unit}-walk-e`);
                 humanImage.classList.add(`${unit}-idle-e`);
-                clearInterval(intervalId)
+                clearInterval(intervalIdUnit)
                 movementAC.left = false;
                 movementAC.wait = false;
 
@@ -2286,8 +2375,10 @@ function movementUnitReverse(leftPoint, topPoint, unit) {
                 unitsReserve[unit].count++
 
                     setTimeout(() => {
+                        humanImage.classList.remove(`${unit}-idle-e`);
                         removeUnit(human)
-                    }, 1000);
+                        buildUnitLock = false;
+                    }, 1500);
 
             }
         }
@@ -2333,8 +2424,8 @@ function movementtestReverse(leftPoint, topPoint) {
                 armyMovements.movement_right(human)
                 armyMovements.movement_top(human, movementPoint1Top)
             } else {
-                humanImage.classList.add("worker-idle-left");
-                humanImage.classList.remove("worker-walk-left");
+                humanImage.classList.add("worker-idle-e");
+                humanImage.classList.remove("worker-walk-e");
                 setTimeout(() => {
                     buildMode = false;
                     clearInterval(intervalId)
@@ -2381,33 +2472,59 @@ const showresources = setInterval(() => {
 
     let footmanReserve = document.getElementsByClassName("count-footman")[0]
     footmanReserve.innerHTML = unitsReserve.footman.count;
-    // let archerReserve = document.getElementsByClassName("count-archer")[0]
-    // archerReserve.innerHTML = unitsReserve.archer.count;
-    // let masemanReserve = document.getElementsByClassName("count-maseman")[0]
-    // masemanReserve.innerHTML = unitsReserve.maseman.count;
-    // let longbowmanReserve = document.getElementsByClassName("count-longbowman")[0]
-    // longbowmanReserve.innerHTML = unitsReserve.longbowman.count;
+    let archerReserve = document.getElementsByClassName("count-archer")[0]
+    archerReserve.innerHTML = unitsReserve.archer.count;
+    let masemanReserve = document.getElementsByClassName("count-maseman")[0]
+    masemanReserve.innerHTML = unitsReserve.maseman.count;
+    let longbowmanReserve = document.getElementsByClassName("count-longbowman")[0]
+    longbowmanReserve.innerHTML = unitsReserve.longbowman.count;
 }, 250);
 
 
 
 
 function unitCreateAnimations(unit, action) {
+
     var direction = ["s", "se", "e", "ne", "n", "nw", "w", "sw"]
     var sheet = window.document.styleSheets[1];
     for (let i = 0; i < 8; i++) {
         sheet.insertRule(`.${unit}-${action}-${direction[i]} {
-        background-image: url("units/${unit}/${action}/${direction} (1).gif") !important;
-        background-repeat: no-repeat;
-    }
-    `, sheet.cssRules.length);
+            
+            content: url("units/${unit}/${action}/${direction[i]} (1).gif")
+    }`, sheet.cssRules.length);
     }
 
 }
 
-function insertAnimations() {
+(function insertAnimations() {
     var units = Object.keys(unitsReserve)
     for (unit of units) {
         unitCreateAnimations(unit, "idle")
+        unitCreateAnimations(unit, "walk")
+        unitCreateAnimations(unit, "attack")
+        unitCreateAnimations(unit, "die")
     }
-}
+
+    //дополнительные анимации
+
+
+    unitCreateAnimations("footman", "attack2")
+
+    unitCreateAnimations("worker", "idle")
+    unitCreateAnimations("worker", "walk")
+    unitCreateAnimations("worker", "build")
+}())
+
+
+// var testELMouse = document.getElementsByTagName("body")[0]
+// testELMouse.addEventListener("click", callme);
+
+// function callme(e) {
+//     console.log(e.layerX + " " + e.layerY)
+
+//     if (e.layerY <= 200) {
+//         console.log("border")
+//     } else {
+//         createFakeUnit("footman", e.layerY - 15, e.layerX - 10, "s")
+//     }
+// }

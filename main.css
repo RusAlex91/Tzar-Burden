@@ -366,23 +366,3 @@ body {
 
 
 /* worker */
-
-.worker-idle-top {
-    background-image: url("worker/idle/h5.gif") !important;
-    background-repeat: no-repeat;
-}
-
-.worker-build-top {
-    background-image: url("worker/build/h5.gif") !important;
-    background-repeat: no-repeat;
-}
-
-.worker-walk-left {
-    background-image: url("worker/walk/h3.gif") !important;
-    background-repeat: no-repeat;
-}
-
-.worker-idle-left {
-    background-image: url("worker/idle/h3.gif") !important;
-    background-repeat: no-repeat;
-}
