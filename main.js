@@ -2487,11 +2487,23 @@ function unitCreateAnimations(unit, action) {
 
     var direction = ["s", "se", "e", "ne", "n", "nw", "w", "sw"]
     var sheet = window.document.styleSheets[1];
-    for (let i = 0; i < 8; i++) {
-        sheet.insertRule(`.${unit}-${action}-${direction[i]} {
+    if (unit == "worker") {
+        for (let i = 0; i < 8; i++) {
+            sheet.insertRule(`.${unit}-${action}-${direction[i]} {
+                position: relative;
+                height: 40px;
+                width: 40px;
+                background-image: url("units/${unit}/${action}/${direction[i]} (1).gif") !important;
+                background-repeat: no-repeat;
+    }`, sheet.cssRules.length);
+        }
+    } else {
+        for (let i = 0; i < 8; i++) {
+            sheet.insertRule(`.${unit}-${action}-${direction[i]} {
             
             content: url("units/${unit}/${action}/${direction[i]} (1).gif")
     }`, sheet.cssRules.length);
+        }
     }
 
 }
@@ -2520,11 +2532,27 @@ function unitCreateAnimations(unit, action) {
 // testELMouse.addEventListener("click", callme);
 
 // function callme(e) {
+//     var myImage = document.getElementsByClassName("human1_footman_ally0")[0]
+//     console.log('My width is: ', this.naturalWidth);
+//     console.log('My height is: ', this.naturalHeight);
+
 //     console.log(e.layerX + " " + e.layerY)
 
 //     if (e.layerY <= 200) {
 //         console.log("border")
 //     } else {
-//         createFakeUnit("footman", e.layerY - 15, e.layerX - 10, "s")
+//         // createFakeUnit("footman", e.layerY - 15, e.layerX - 10, "s")
 //     }
 // }
+
+var myImage = document.getElementsByClassName("castle-img")[0]
+
+myImage.addEventListener('click', function() {
+    console.log('My width is: ', this.naturalWidth);
+    console.log('My height is: ', this.naturalHeight);
+});
+
+var restrictedAreas = {
+    spot1: [1, 6]
+
+}

@@ -258,7 +258,6 @@ body {
 
 .mainLands {
     min-width: 1200px;
-    width: 1200px;
     height: 1600px;
 }
 
@@ -359,6 +358,15 @@ body {
 
 .barracks-complete:hover {
     cursor: pointer;
+}
+
+.building-medium {
+    position: fixed;
+    /* Floating above */
+    transition: transform;
+    /* Sticking effect */
+    pointer-events: none;
+    /* Allow clicking trough the div */
 }
 
 
