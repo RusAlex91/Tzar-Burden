@@ -72,21 +72,16 @@ function createFakeUnit(unit, y, x, side) {
     transition: border 0.3s linear;
    }
     `, sheet.cssRules.length);
-    sheet.insertRule(`.human${unitsNow}:hover {border: 1px solid blue;;}
+    sheet.insertRule(`.human${unitsNow}:hover {border: 1px solid blue;}
         `, sheet.cssRules.length);
-    sheet.insertRule(`.human${unitsNow}_${unit}_ally0 {
-        
-        
- 
-    }
-            `, sheet.cssRules.length);
+
     unitsNow++
-    var human = new Army(genName, unit, "ally");
+    var human = new FakeArmy(genName, unit);
 
     human.create("mainLands");
-    human.addFakeSoldier();
+    human.addFakeSoldier(unit);
 
-    let humanArmy = document.getElementsByClassName(genName)[0];
+
     // armyMovements.movement_left(humanArmy);
 
     console.log("created");
@@ -1225,6 +1220,30 @@ class Army {
 
 }
 
+class FakeArmy {
+    constructor(name, type) {
+        this.name = name;
+        this.type = type;
+
+    }
+    create(where) {
+        let div = document.createElement("div");
+        div.className = `${this.name} ${this.type}`;
+        let parent = document.getElementsByClassName(where)[0];
+        parent.append(div);
+
+    }
+    addFakeSoldier(type) {
+
+        let soldier = document.createElement("img");
+        soldier.className = `${this.name}_${this.type}_unit`;
+        let parent = document.getElementsByClassName(this.name)[0];
+        parent.append(soldier);
+
+    }
+
+}
+
 var armyMovements = {
 
     vampire1: function() {
@@ -1254,7 +1273,7 @@ var armyMovements = {
         // listOfEnemies.human1 = true;
         this.movement_left(human4);
     },
-    movement_left: async function(army) {
+    movement_left: async function(army, left) {
         function timer(v) {
             return new Promise(function(r) {
                 return setTimeout(r, v);
@@ -1276,7 +1295,8 @@ var armyMovements = {
 
                 break;
                 //For loop or something, this just for testing
-            } else if (army_left == 800) {
+            } else if (army_left == left) {
+
                 army.style.left = army_left + "px";
                 break;
             } else {
@@ -1287,14 +1307,14 @@ var armyMovements = {
         }
     },
 
-    movement_right: async function(army) {
+    movement_right: async function(army, right) {
         function timer(v) {
             return new Promise(function(r) {
                 return setTimeout(r, v);
             });
         }
         let computedStyleArmyRight = getComputedStyle(army);
-        let army_left = parseInt(computedStyleArmyRight.left);
+        let army_right = parseInt(computedStyleArmyRight.left);
         var item = [...army.classList];
         var choseEnemy = item[0];
         for (let i = 0; i < 2; i++) {
@@ -1309,9 +1329,13 @@ var armyMovements = {
 
                 break;
                 //For loop or something, this just for testing
+            } else if (army_right == right) {
+
+                army.style.left = army_right + "px";
+                break;
             } else {
-                army_left = army_left + 1;
-                army.style.left = army_left + "px";
+                army_right = army_right + 1;
+                army.style.left = army_right + "px";
                 await timer(33);
             }
         }
@@ -1348,6 +1372,43 @@ var armyMovements = {
                 await timer(33);
             }
         }
+
+
+    },
+    movement_bottom: async function(army, bottom) {
+        function timer(v) {
+            return new Promise(function(r) {
+                return setTimeout(r, v);
+            });
+        }
+        let computedStyleArmyRight = getComputedStyle(army);
+        let army_bottom = parseInt(computedStyleArmyRight.top);
+        var item = [...army.classList];
+        var choseEnemy = item[0];
+        for (let i = 0; i < 2; i++) {
+            // if (!listOfEnemies[choseEnemy]) {
+            //     break;
+            // } else
+
+            // || allyflag == true
+
+            var checkOngoing = ongoingArmyName(choseEnemy);
+            if (checkOngoing) {
+
+                break;
+                //For loop or something, this just for testing
+            } else if (army_bottom == bottom) {
+
+                army.style.top = army_bottom + "px";
+                break;
+            } else {
+                army_bottom = army_bottom + 1;
+                army.style.top = army_bottom + "px";
+                await timer(33);
+            }
+        }
+
+
     }
 };
 
@@ -1389,40 +1450,40 @@ var armyMovements = {
 //             }
 //         }
 // }, 66)
+// Тут от армейки работает
+// setInterval(function movementtestEnemy() {
+//     // console.log(unitsNow)
+//     var movementPoint1 = 500;
+//     var movementPoint2 = 400;
+//     var movementPoint3 = 300;
+//     loop1:
+//         for (let o = 0; o <= enemyUnitsNow; o++) {
+//             // if (unitsNow == 0) {
+//             //     break
+//             // }
+//             var genName = `vampire${o}`
+//             let vampire = document.getElementsByClassName(genName)[0];
+//             if (vampire == undefined) {
 
-setInterval(function movementtestEnemy() {
-    // console.log(unitsNow)
-    var movementPoint1 = 500;
-    var movementPoint2 = 400;
-    var movementPoint3 = 300;
-    loop1:
-        for (let o = 0; o <= enemyUnitsNow; o++) {
-            // if (unitsNow == 0) {
-            //     break
-            // }
-            var genName = `vampire${o}`
-            let vampire = document.getElementsByClassName(genName)[0];
-            if (vampire == undefined) {
-
-                continue loop1
-            }
-            var computedStyleArmy = getComputedStyle(vampire);
-            var leftNumber = parseInt(computedStyleArmy.left)
-            var topNumber = parseInt(computedStyleArmy.top)
-                // console.log("top " + topNumber);
-                // console.log("left " + leftNumber);
-            if (leftNumber >= movementPoint1 && movementPoint1 <= leftNumber) {
-                armyMovements.movement_right(vampire)
-                    // console.log("point 1");
-            } else if (leftNumber >= movementPoint2 && movementPoint2 <= leftNumber) {
-                armyMovements.movement_right(vampire)
-                    // console.log("point 2");
-            } else if (leftNumber >= movementPoint3 && movementPoint3 <= leftNumber) {
-                armyMovements.movement_right(vampire)
-                    // console.log("point 3");
-            }
-        }
-}, 1000)
+//                 continue loop1
+//             }
+//             var computedStyleArmy = getComputedStyle(vampire);
+//             var leftNumber = parseInt(computedStyleArmy.left)
+//             var topNumber = parseInt(computedStyleArmy.top)
+//                 // console.log("top " + topNumber);
+//                 // console.log("left " + leftNumber);
+//             if (leftNumber >= movementPoint1 && movementPoint1 <= leftNumber) {
+//                 armyMovements.movement_right(vampire)
+//                     // console.log("point 1");
+//             } else if (leftNumber >= movementPoint2 && movementPoint2 <= leftNumber) {
+//                 armyMovements.movement_right(vampire)
+//                     // console.log("point 2");
+//             } else if (leftNumber >= movementPoint3 && movementPoint3 <= leftNumber) {
+//                 armyMovements.movement_right(vampire)
+//                     // console.log("point 3");
+//             }
+//         }
+// }, 1000)
 
 function checkMovementsAll() {
 
@@ -1776,19 +1837,36 @@ function createUnitTest() {
 }
 
 
-
+//enable build start
+//icons handlers
 var barracksButton = document.getElementsByClassName("barracks-icon")[0]
+barracksButton.addEventListener("click", posBuild.bind(window, "barracks"))
 
-barracksButton.addEventListener("click", posBuildBarracks)
+var houseButton = document.getElementsByClassName("house-icon")[0]
+houseButton.addEventListener("click", posBuild.bind(window, "house"))
 
-var buildMode = false;
-var buildModeHidden = false;
+var fieldButton = document.getElementsByClassName("field-icon")[0]
+fieldButton.addEventListener("click", posBuild.bind(window, "field"))
+
+var demolishButton = document.getElementsByClassName("demolish-state-icon")[0]
+demolishButton.addEventListener("click", demolishState)
+
+var buildButton = document.getElementsByClassName("build-state-icon")[0]
+buildButton.addEventListener("click", buildState)
+
+var leftButton = document.getElementsByClassName("sub-controls_left")[0]
+leftButton.addEventListener("click", returnToMain)
+    //переменные для доступа к строительству
+var buildMode = true;
+var buildModeHidden = true;
 var canBuildBarracks = false;
+var canBuildHouse = false;
 var buildComplete = false;
 var buildSmall = false;
 var buildMedium = false;
 var buildBig = false;
 var buildTiny = false;
+var canBuildField = false;
 // var buildingNow = {
 //     stadia1: false,
 //     stadia2: false,
@@ -1796,7 +1874,7 @@ var buildTiny = false;
 //     stadia4: false
 // }
 
-function buildBigStart(event) {
+function buildMediumStart(event) {
     var building = document.getElementsByClassName("buildProsesessBig_stadia1")[0]
     setTimeout(() => {
         building.classList.remove("buildProsesessBig_stadia1")
@@ -1814,6 +1892,26 @@ function buildBigStart(event) {
         buildComplete = true;
         finalBuild(event)
     }, 5000);
+}
+
+function buildTinyStart(event) {
+    var building = document.getElementsByClassName("buildProsesessTiny_stadia1")[0]
+    setTimeout(() => {
+        building.classList.remove("buildProsesessTiny_stadia1")
+        building.classList.add("buildProsesessTiny_stadia2")
+    }, 1500);
+    setTimeout(() => {
+        building.classList.remove("buildProsesessTiny_stadia2")
+        building.classList.add("buildProsesessTiny_stadia3")
+    }, 3000);
+    setTimeout(() => {
+        building.classList.remove("buildProsesessTiny_stadia3")
+        building.classList.add("buildProsesessTiny_stadia4")
+    }, 4500);
+    setTimeout(() => {
+        buildComplete = true;
+        finalBuild(event)
+    }, 5000);
 
 }
 
@@ -1821,7 +1919,7 @@ var alreadySelected = false;
 
 function finalBuild(event) {
     var barracks = document.getElementsByClassName("barracks building")[0]
-
+    var house = document.getElementsByClassName("house building")[0]
     if (canBuildBarracks && buildComplete) {
         buildComplete = false;
         canBuildBarracks = false;
@@ -1832,13 +1930,26 @@ function finalBuild(event) {
         createBarracksInterface(event.target.parentNode.classList[1])
         barracks.addEventListener('click', barracksHireListner)
 
+    } else if (canBuildHouse && buildComplete) {
+        buildComplete = false;
+        canBuildHouse = false;
+        house.childNodes[1].classList.remove("buildProsesessTiny_stadia4")
+        house.classList.remove("building")
+        house.classList.add("build")
+        house.childNodes[1].classList.add("house-complete")
+            // createBarracksInterface(event.target.parentNode.classList[1])
+            // house.addEventListener('click', barracksHireListner)
     }
 
 }
 
+var ELcreated = false;
+
+//Event Listners состояния закрепленности на интерфейсе постройке солдат в бараках
+
 
 function barracksHireListner(event) {
-    let leftPanelBuildings = document.getElementsByClassName("buildings-wrapper")[0]
+    let leftPanelBuildings = document.getElementsByClassName("main-controls")[0]
     leftPanelBuildings.classList.add("hidden")
 
     let name = `barracks-interface ${event.currentTarget.classList[1]}-slot`
@@ -1849,21 +1960,21 @@ function barracksHireListner(event) {
         event.currentTarget.classList.add("barracks-complete-highlighted")
         event.currentTarget.classList.add("selected")
         alreadySelected = true;
-        if (event.currentTarget.classList[1] == "spot1") {
+        if (event.currentTarget.classList[1] == "spot1" && elBarracksLocks.spot1 == false) {
             if (!buildUnitLock) {
-
-
-                barracksHire.footman(event.currentTarget.classList[1], elBarracksLocks.spot1)
-                barracksHire.maseman(event.currentTarget.classList[1], elBarracksLocks.spot1)
-                barracksHire.archer(event.currentTarget.classList[1], elBarracksLocks.spot1)
-                barracksHire.longbowman(event.currentTarget.classList[1], elBarracksLocks.spot1)
+                elBarracksLocks.spot1 = true; // сделать false когда будешь делать удаление зданий
+                barracksHire.footman(event.currentTarget.classList[1])
+                barracksHire.maceman(event.currentTarget.classList[1])
+                barracksHire.archer(event.currentTarget.classList[1])
+                barracksHire.longbowman(event.currentTarget.classList[1])
             }
-        } else if (event.currentTarget.classList[1] == "spot2") {
+        } else if (event.currentTarget.classList[1] == "spot2" && elBarracksLocks.spot2 == false) {
             console.log("second barracks listners")
-            barracksHire.footman(event.currentTarget.classList[1], elBarracksLocks.spot2)
-            barracksHire.maseman(event.currentTarget.classList[1], elBarracksLocks.spot2)
-            barracksHire.archer(event.currentTarget.classList[1], elBarracksLocks.spot2)
-            barracksHire.longbowman(event.currentTarget.classList[1], elBarracksLocks.spot2)
+            elBarracksLocks.spot2 = true; // сделать false когда будешь делать удаление зданий
+            barracksHire.footman(event.currentTarget.classList[1])
+            barracksHire.maceman(event.currentTarget.classList[1])
+            barracksHire.archer(event.currentTarget.classList[1])
+            barracksHire.longbowman(event.currentTarget.classList[1])
         }
 
     }
@@ -1875,6 +1986,7 @@ function barracksHireListner(event) {
 
 function createBarracksInterface(spot) {
     let div = document.createElement("div");
+    let iconName = ["footman", "archer", "maceman", "longbowman"]
     div.className = `barracks-interface ${spot}-slot hidden`;
     let parent = document.getElementsByClassName("interface-left")[0];
     parent.append(div);
@@ -1883,28 +1995,42 @@ function createBarracksInterface(spot) {
     var d1 = document.getElementsByClassName(divName)[0];
     d1.innerHTML = `
     <div class="tier-1">
-    <img class=" footman-icon-${spot} icon" src="icons/footman.png" alt="">
-    <img class=" archer-icon-${spot} icon" src="icons/archer.png" alt="">
+    <img class="${iconName[0]}-icon-${spot} icon" src="icons/footman.png" alt="">
+    <span class="build-count-${iconName[0]} build-counter"></span>
+    <img class="${iconName[1]}-icon-${spot} icon" src="icons/archer.png" alt="">
+<span class="build-count-${iconName[1]} build-counter"></span>
 </div>
 
 <div class="tier-2">
-    <img class=" maseman-icon-${spot} icon" src="icons/maseman.png" alt="">
-    <img class=" longbowman-icon-${spot} icon" src="icons/longbowman.png" alt="">
+    <img class="${iconName[2]}-icon-${spot} icon" src="icons/maceman.png" alt="">
+<span class="build-count-${iconName[2]} build-counter"></span>
+    <img class="${iconName[3]}-icon-${spot} icon" src="icons/longbowman.png" alt="">
+    <span class="build-count-${iconName[3]} build-counter"></span>
 </div>`;
+    for (let i = 0; i < iconName.length; i++) {
+        var sheet = window.document.styleSheets[1];
+        sheet.insertRule(`.${iconName[i]}-icon-${spot}:hover {
+        border: 1px solid transparent;
+    }
+`, sheet.cssRules.length);
+    }
+
 }
 
 
 
-var mainWindow = document.getElementsByTagName("body")[0]
+
+var mainWindow = document.getElementsByClassName("mainLands")[0]
 
 
 mainWindow.addEventListener("click", function(event) {
-    // var barracksListners = document.getElementsByClassName("barracks");
-    // for (let i = 0; i < barracksListners.length; i++) {
-    //     barracksListners[i].addEventListener("click", function() {
-    //         console.log("Бараки")
-    //         barracksListners[i].removeEventListener('click', barracksHireListner)
-    //         barracksListners[i].addEventListener('click', barracksHireListner)
+    event.stopPropagation()
+        // var barracksListners = document.getElementsByClassName("barracks");
+        // for (let i = 0; i < barracksListners.length; i++) {
+        //     barracksListners[i].addEventListener("click", function() {
+        //         console.log("Бараки")
+        //         barracksListners[i].removeEventListener('click', barracksHireListner)
+        //         barracksListners[i].addEventListener('click', barracksHireListner)
 
     //     })
     // }
@@ -1915,13 +2041,20 @@ mainWindow.addEventListener("click", function(event) {
         leftPanelHirebarracks[i].classList.add("hidden")
 
     }
+    var subLeftBtn = document.getElementsByClassName("sub-controls_left")[0]
+    if (subLeftBtn.children[0].classList[0] == "sub-controls_left-img_active") {
+        subLeftBtn.classList.add("sub-controls_left-img_inactive")
+        subLeftBtn.classList.remove("sub-controls_left-img_active")
+        console.log("убрано");
+    }
 
 
-    console.log("убрано");
 
-
-    let leftPanel = document.getElementsByClassName("buildings-wrapper")[0];
+    let leftPanel = document.getElementsByClassName("main-controls")[0];
     leftPanel.classList.remove("hidden")
+
+    let leftPanelBuild = document.getElementsByClassName("buildings-wrapper")[0];
+    leftPanelBuild.classList.add("hidden")
 
     let castle = document.getElementsByClassName("castle")[0];
     castle.classList.remove("spot0-active")
@@ -1931,22 +2064,31 @@ mainWindow.addEventListener("click", function(event) {
 
 
     cancelBuildMedium()
+    cancelBuildTiny()
+    var demolishButton = document.getElementsByClassName("demolish-state-icon")[0]
+    demolishButton.classList.remove("disabled")
+    demolishMediumSupport()
+    demolishTinySupport()
+        // console.log("demolish off?")
 
     if (alreadySelected) {
-
+        alreadySelected = false;
         let barracks = document.getElementsByClassName("selected")[0];
         // if (event.currentTarget.classList.contains == "") {
 
         // }
         barracks.classList.remove("barracks-complete-highlighted")
         barracks.classList.remove("selected")
-        removeEventListener(footmanBtn)
-        alreadySelected = false;
+
+        // var man = `footman-icon-spot1`
+        // var footmanBtn = document.getElementsByClassName(man)[0]
+        // footmanBtn.removeEventListener("click", hireMan)
     }
 
 
 
-    console.log("some buildings not here yet");
+
+
 
 })
 
@@ -1967,8 +2109,12 @@ mainWindow.addEventListener("click", function(event) {
 var castleListner = document.getElementsByClassName("castle")[0]
 
 castleListner.addEventListener("click", function(event) {
-    let leftPanel = document.getElementsByClassName("buildings-wrapper")[0];
+    let leftPanel = document.getElementsByClassName("main-controls")[0];
     leftPanel.classList.add("hidden")
+
+    let leftPanelBuildings = document.getElementsByClassName("buildings-wrapper")[0];
+    leftPanelBuildings.classList.add("hidden")
+
     let castle = document.getElementsByClassName("castle")[0];
     castle.classList.add("spot0-active")
     event.stopPropagation()
@@ -1988,105 +2134,107 @@ var elBarracksLocks = {
 var barracksHire = {
     footman: function(spot) {
         var man = `footman-icon-${spot}`
-        var footmanBtn = document.getElementsByClassName(man)[0]
-
-        footmanBtn.addEventListener("click", function(event) {
-            console.log("footman created")
-            if (spot == "spot1" && buildUnitLock == false) {
-                let unit = "footman"
-                createFakeUnit(unit, pointsToBuilding.medium1.topPoint, pointsToBuilding.medium1.leftPoint, "e")
-                let name = `human${unitsNow-1}_${unit}_ally0`
-                let man = document.getElementsByClassName(name)[0]
-                man.classList.add(`${unit}-idle-s`);
-                event.stopPropagation()
-                elBarracksLocks.spot1 = true;
-                startIntervalRevUnit(event, pointsToCastle.medium1.leftPoint, pointsToCastle.medium1.topPoint, "footman")
-            } else if (spot == "spot2" && buildUnitLock == false) {
-
-            }
-        })
+        var unitBtn = document.getElementsByClassName(man)[0]
+        event.stopPropagation()
+        let unit = "footman"
+        unitBtn.addEventListener("click", hireMan.bind(event, event, spot, unit, "first"))
     },
-    archer: function(spot, lock) {
+    archer: function(spot) {
         var man = `archer-icon-${spot}`
-        var footmanBtn = document.getElementsByClassName(man)[0]
-
-        footmanBtn.addEventListener("click", function(event) {
-            console.log("archer created")
-            if (spot == "spot1" && buildUnitLock == false) {
-                createFakeUnit("archer", pointsToBuilding.medium1.topPoint, pointsToBuilding.medium1.leftPoint)
-                event.stopPropagation()
-                elBarracksLocks.spot1 = true;
-                startIntervalRevUnit(event, pointsToCastle.medium1.leftPoint, pointsToCastle.medium1.topPoint, "archer")
-            } else if (spot == "spot2" && buildUnitLock == false) {
-                console.log("а вот это уже другая история")
-                createFakeUnit("archer", pointsToCastle.medium1.topPoint, pointsToCastle.medium1.leftPoint)
-                event.stopPropagation()
-                elBarracksLocks.spot2 = true;
-            }
-        })
+        var unitBtn = document.getElementsByClassName(man)[0]
+        let unit = "archer"
+        unitBtn.addEventListener("click", hireMan.bind(event, event, spot, unit, "second"))
     },
-    maseman: function(spot, lock) {
-        var man = `maseman-icon-${spot}`
-        var footmanBtn = document.getElementsByClassName(man)[0]
-
-        footmanBtn.addEventListener("click", function(event) {
-            console.log("maseman created")
-            if (spot == "spot1" && buildUnitLock == false) {
-                createFakeUnit("maseman", pointsToBuilding.medium1.topPoint, pointsToBuilding.medium1.leftPoint)
-                event.stopPropagation()
-                elBarracksLocks.spot1 = true;
-                startIntervalRevUnit(event, pointsToCastle.medium1.leftPoint, pointsToCastle.medium1.topPoint, "maseman")
-            } else if (spot == "spot2" && buildUnitLock == false) {
-                console.log("а вот это уже другая история")
-                createFakeUnit("maseman", pointsToCastle.medium1.topPoint, pointsToCastle.medium1.leftPoint)
-                event.stopPropagation()
-                elBarracksLocks.spot2 = true;
-            }
-        })
+    maceman: function(spot) {
+        var man = `maceman-icon-${spot}`
+        var unitBtn = document.getElementsByClassName(man)[0]
+        let unit = "maceman"
+        unitBtn.addEventListener("click", hireMan.bind(event, event, spot, unit, "third"))
     },
-    longbowman: function(spot, lock) {
+    longbowman: function(spot) {
         var man = `longbowman-icon-${spot}`
-        var footmanBtn = document.getElementsByClassName(man)[0]
-
-        footmanBtn.addEventListener("click", function(event) {
-            console.log("longbowman created")
-            if (spot == "spot1" && buildUnitLock == false) {
-                createFakeUnit("longbowman", pointsToBuilding.medium1.topPoint, pointsToBuilding.medium1.leftPoint)
-                event.stopPropagation()
-                elBarracksLocks.spot1 = true;
-                startIntervalRevUnit(event, pointsToCastle.medium1.leftPoint, pointsToCastle.medium1.topPoint, "longbowman")
-            } else if (spot == "spot2" && buildUnitLock == false) {
-                console.log("а вот это уже другая история")
-                createFakeUnit("longbowman", pointsToCastle.medium1.topPoint, pointsToCastle.medium1.leftPoint)
-                event.stopPropagation()
-                elBarracksLocks.spot2 = true;
-            }
-        })
+        var unitBtn = document.getElementsByClassName(man)[0]
+        let unit = "longbowman"
+        unitBtn.addEventListener("click", hireMan.bind(event, event, spot, unit, "fourth"))
     }
 }
 
 //initial listners for barraks
 
 
-function posBuildBarracks(event) {
+function posBuild(building, event) {
+    debugger
     event.stopPropagation()
-    if (gold >= 250) {
-        if (!buildMode) {
-            buildMode = true;
-            buildModeHidden = true;
+    if (gold >= 250 && building == "barracks") {
+        if (buildMode) {
+
+
+            // buildModeHidden = true;
             canBuildBarracks = true;
             showBarracksImg()
         }
+        // else if (!buildMedium) {
+        //     buildMode = false;
+        // }
 
-    } else {
+    } else if (gold <= 250 && building == "barracks") {
         alert("нет бабла/еще строится")
+    }
+    if (gold >= 50 && building == "house") {
+        if (buildMode) {
+
+
+            // buildModeHidden = true;
+            canBuildHouse = true;
+            showHouseImg()
+        }
+        // else if (!buildTiny) {
+        //     buildMode = false;
+        // }
+
+    } else if (gold <= 50 && building == "house") {
+        alert("нет бабла/еще строится")
+    }
+    if (wood >= 75 && building == "field") {
+        console.log("here we go filed mazafacka")
+        if (buildMode) {
+            // buildModeHidden = true;
+            canBuildHouse = true;
+            showHouseImg()
+        }
     }
 }
 
+function toggleBuild() {
+    var iconBuild = document.getElementsByClassName("build-state-icon")[0]
+    iconBuild.classList.toggle("disabled")
+}
+
+function posBuildHouse(event) {
+    event.stopPropagation()
+
+}
+
 function cancelBuildMedium() {
-    buildMode = false;
-    buildModeHidden = false;
+    debugger
+    if (buildModeHidden) {
+        buildMode = true;
+        removeDisabledBuild()
+    }
     showBarracksImg()
+}
+
+function cancelBuildTiny() {
+    if (buildModeHidden) {
+        buildMode = true;
+        removeDisabledBuild()
+    }
+    showHouseImg()
+}
+
+function removeDisabledBuild() {
+    var iconBuild = document.getElementsByClassName("build-state-icon")[0]
+    iconBuild.classList.remove("disabled")
 }
 
 function showBarracksImg() {
@@ -2100,50 +2248,161 @@ function showBarracksImg() {
 
         } else if (mediumBuildings[i].classList[3] == "not-build" && buildModeHidden == false) {
 
-            console.log("лох")
             mediumBuildings_img[i].classList.remove("possible-barracks")
             mediumBuildings_img[i].classList.remove("grayscale")
         }
     }
 }
 
+function showHouseImg() {
+    var tinyBuildings = document.getElementsByClassName("building-tiny");
+    var tinyBuildings_img = document.getElementsByClassName("building-tiny_img");
+    for (let i = 0; i < tinyBuildings.length; i++) {
+        if (tinyBuildings[i].classList[3] == "not-build" && buildModeHidden == true && canBuildHouse == true) {
+            console.log("можем строить")
+            tinyBuildings_img[i].classList.add("possible-house")
+            tinyBuildings_img[i].classList.add("grayscale")
 
+        } else if (tinyBuildings[i].classList[3] == "not-build" && buildModeHidden == false) {
+
+            tinyBuildings_img[i].classList.remove("possible-house")
+            tinyBuildings_img[i].classList.remove("grayscale")
+        }
+
+        if (tinyBuildings[i].classList[3] == "not-build" && buildModeHidden == true && canBuildHouse == true) {
+            console.log("можем строить")
+            tinyBuildings_img[i].classList.add("possible-house")
+            tinyBuildings_img[i].classList.add("grayscale")
+        } else if (tinyBuildings[i].classList[3] == "not-build" && buildModeHidden == false) {
+
+            tinyBuildings_img[i].classList.remove("possible-house")
+            tinyBuildings_img[i].classList.remove("grayscale")
+        }
+    }
+}
+
+
+
+//только для бараков?
 //отслеживания кликов на площадки строительные
-var barracksBuildingSites = document.querySelectorAll("img.building-medium_img");
+var mediumBuildingSites = document.querySelectorAll("img.building-medium_img");
 
-[].forEach.call(barracksBuildingSites, function(el) {
+[].forEach.call(mediumBuildingSites, function(el) {
     el.addEventListener('click', function(e) {
-        let parent = el.parentNode.classList[3]
+        var parent = el.parentNode.classList[3]
         if (buildMode == true &&
             canBuildBarracks == true && parent == "not-build") {
+            e.stopPropagation()
             el.classList.remove("possible-barracks")
             el.classList.remove("grayscale")
             el.parentNode.classList.add("barracks")
             el.classList.add("buildProsesessBig_stadia1")
             el.parentNode.classList.remove("not-build")
             el.parentNode.classList.add("building")
+
             gold = gold - 250;
-            console.log(el.classList)
+            //находим место на котором построено и вычисляем как будет называться юнит
+            var spot = el.parentNode.classList[1]
+            var unitNumber = spot.replace(/[a-z]/gi, '')
+            console.log(unitNumber)
+
             buildModeHidden = false;
+            let buildingsInterface = document.getElementsByClassName("buildings-wrapper")[0]
+            buildingsInterface.classList.toggle("hidden")
+
+            let mainInterface = document.getElementsByClassName("main-controls")[0]
+            mainInterface.classList.toggle("hidden")
+
 
             showBarracksImg()
-            createWorker(pointsToCastle.medium1.topPoint,
-                pointsToCastle.medium1.leftPoint, "w")
-            startIntervalPeasant(e, pointsToBuilding.medium1.leftPoint, pointsToBuilding.medium1.topPoint)
-            buildBig = true;
+
+            createWorker(
+                pointsToBuilding.initWorkerPos.topPoint,
+                pointsToBuilding.initWorkerPos.leftPoint,
+                "w", unitNumber)
+            startIntervalPeasant(
+                e,
+                pointsToBuilding[spot].topPoint_1,
+                pointsToBuilding[spot].leftPoint_1,
+                pointsToBuilding[spot].topPoint_2,
+                pointsToBuilding[spot].leftPoint_2,
+                pointsToBuilding[spot].topPoint_3,
+                pointsToBuilding[spot].leftPoint_3,
+                unitNumber,
+                "constructBuilding")
+            buildMedium = true;
+        }
+        if (buildMode == true &&
+            canBuildBlacksmith == true && parent == "not-build") {
+            //код для новой постройки
         }
     })
 });
 
 
 
+var tinyBuildingSites = document.querySelectorAll("img.building-tiny_img");
+
+[].forEach.call(tinyBuildingSites, function(el) {
+    el.addEventListener('click', function(e) {
+        var parent = el.parentNode.classList[3]
+        if (buildMode == true &&
+            canBuildHouse == true && parent == "not-build") {
+            e.stopPropagation()
+            el.classList.remove("possible-house")
+            el.classList.remove("grayscale")
+            el.parentNode.classList.add("house")
+            el.classList.add("buildProsesessTiny_stadia1")
+            el.parentNode.classList.remove("not-build")
+            el.parentNode.classList.add("building")
+
+            gold = gold - 50;
+            //находим место на котором построено и вычисляем как будет называться юнит
+            var spot = el.parentNode.classList[1]
+            var unitNumber = spot.replace(/[a-z]/gi, '')
+            console.log(unitNumber)
+
+            buildModeHidden = false;
+
+            let buildingsInterface = document.getElementsByClassName("buildings-wrapper")[0]
+            buildingsInterface.classList.toggle("hidden")
+
+            let mainInterface = document.getElementsByClassName("main-controls")[0]
+            mainInterface.classList.toggle("hidden")
+
+            showHouseImg()
+            buildTiny = true;
+            createWorker(
+                pointsToBuilding.initWorkerPos.topPoint,
+                pointsToBuilding.initWorkerPos.leftPoint,
+                "w", unitNumber)
+            startIntervalPeasant(
+                e,
+                pointsToBuilding[spot].topPoint_1,
+                pointsToBuilding[spot].leftPoint_1,
+                pointsToBuilding[spot].topPoint_2,
+                pointsToBuilding[spot].leftPoint_2,
+                pointsToBuilding[spot].topPoint_3,
+                pointsToBuilding[spot].leftPoint_3,
+                unitNumber,
+                "constructBuilding")
+
+        }
+        if (buildMode == true &&
+            canBuildGarden == true && parent == "not-build") {
+
+        }
+    })
+});
 
 
+var workersNow = 0;
 
-function createWorker(y, x, position) {
-    var genName = `human${unitsNow}`
+
+function createWorker(y, x, position, unitNumber) {
+    var genName = `humans${unitNumber}`
     var sheet = window.document.styleSheets[1];
-    sheet.insertRule(`.human${unitsNow} {
+    sheet.insertRule(`.humans${unitNumber} {
     position: absolute;
     display: flex;
     top: ${y}px;
@@ -2151,28 +2410,25 @@ function createWorker(y, x, position) {
     flex-direction: column;
     flex-wrap: wrap;
     transition: border 0.3s linear;
-    height: 40px;
-    width: 40px;
+    
     }
     `, sheet.cssRules.length);
-    sheet.insertRule(`.human${unitsNow}:hover {}
+    sheet.insertRule(`.humans${unitNumber}_worker_unit {
+      
+    }
         `, sheet.cssRules.length);
-    sheet.insertRule(`.human${unitsNow}_peasant_ally0 {
-        position: relative;
-        height: 40px;
-        width: 40px;
-        background-image: url("units/worker/walk/${position} (1).gif");
-        background-repeat: no-repeat;
-        }
-            `, sheet.cssRules.length);
-    unitsNow++
-    var human = new Army(genName, "peasant", "ally");
+
+
+    var human = new FakeArmy(genName, "worker");
 
     human.create("mainLands");
-    human.addSoldier();
-    let humanArmy = document.getElementsByClassName(genName)[0];
-    // armyMovements.movement_left(humanArmy);
-    console.log("created");
+    human.addFakeSoldier("worker");
+
+    let name = `humans${unitNumber}_worker_unit`
+    let mane = document.getElementsByClassName(name)[0]
+    mane.classList.add(`worker-idle-${position}`);
+    // workersNow++
+    console.log("created worker");
 }
 
 
@@ -2185,17 +2441,152 @@ function createWorker(y, x, position) {
 //     }, interval);
 // }
 
+//построено ли здание или нет
+var spotBuildingsState = {
+    1: false,
+    2: false,
+    3: false,
+    4: false,
+    5: false,
+    6: false,
+    7: false,
+    8: false,
+    9: false,
+    10: false,
+    11: false,
+    12: false,
+    13: false,
+    14: false,
+    15: false,
+    16: false,
+    17: false,
+    18: false,
+    19: false,
+    20: false,
+    21: false,
+    22: false,
+    23: false,
+    24: false,
+    25: false,
+    26: false,
+    27: false,
+    28: false,
+    29: false,
+    30: false,
+    31: false,
+    32: false,
+    33: false,
+    34: false,
+    35: false,
+    36: false,
+    37: false,
+    38: false,
+    39: false,
+    40: false,
+    41: false,
+    42: false,
+    43: false,
+    44: false,
+    45: false,
+    46: false,
+    47: false,
+    48: false,
+    49: false,
+    50: false,
+}
 
 var pointsToBuilding = {
-    medium1: {
+    initWorkerPos: {
+        // Не трогать, это на новый год:
+        topPoint: 1007,
+        leftPoint: 637
+    },
+    spot1: {
+        topPoint_1: 1060,
+        leftPoint_1: 637,
+
+        topPoint_2: 1060,
+        leftPoint_2: 690,
+
+        topPoint_3: 1160,
+        leftPoint_3: 690,
+    },
+    spot2: {
+        topPoint_1: 875,
+        leftPoint_1: 637,
+
+        topPoint_2: 875,
+        leftPoint_2: 831,
+
+        topPoint_3: 553,
+        leftPoint_3: 831,
+    },
+    spot3: {
         leftPoint: 300,
         topPoint: 850
+    },
+    spot4: {
+        leftPoint: 300,
+        topPoint: 850
+    },
+    spot5: {
+        topPoint_1: 1060,
+        leftPoint_1: 637,
+
+        topPoint_2: 1060,
+        leftPoint_2: 690,
+
+        topPoint_3: 1160,
+        leftPoint_3: 690,
+    },
+    spot6: {
+        topPoint_1: 1060,
+        leftPoint_1: 637,
+
+        topPoint_2: 1060,
+        leftPoint_2: 690,
+
+        topPoint_3: 1160,
+        leftPoint_3: 690,
+    },
+    spot7: {
+        topPoint_1: 1060,
+        leftPoint_1: 637,
+
+        topPoint_2: 1060,
+        leftPoint_2: 690,
+
+        topPoint_3: 1160,
+        leftPoint_3: 690,
+    },
+    spot8: {
+        topPoint_1: 1060,
+        leftPoint_1: 637,
+
+        topPoint_2: 1060,
+        leftPoint_2: 690,
+
+        topPoint_3: 1160,
+        leftPoint_3: 690,
     }
 }
 
 var pointsToCastle = {
-    medium1: {
+
+    spot1: {
         leftPoint: 615,
+        topPoint: 850
+    },
+    spot2: {
+        leftPoint: 300,
+        topPoint: 850
+    },
+    spot3: {
+        leftPoint: 300,
+        topPoint: 850
+    },
+    spot4: {
+        leftPoint: 300,
         topPoint: 850
     }
 
@@ -2208,63 +2599,422 @@ function startIntervalRevPeasant(event, left, top) {
     intervalId = setInterval(movementtestReverse.bind(window, left, top, event), 66);
 }
 
-function startIntervalPeasant(event, left, top) {
+function startIntervalPeasant(event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPoint3, leftPoint3, unitNumber, workType, reverse) {
     // Store the id of the interval so we can clear it later
-    intervalId = setInterval(movementtest.bind(window, left, top, event), 66)
+    id_array_workers[unitNumber] = setInterval(movementtest.bind(window, event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPoint3, leftPoint3, unitNumber, workType, reverse), 66)
 }
+//для ручного теста
+var iSAY = false;
 
+var id_array_workers = []
 
-function movementtest(leftPoint, topPoint, event, unit) {
+function movementtest(event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPoint3, leftPoint3, unitNumber, workType, reverse) {
     // console.log(unitsNow)
-    var movementPointLeft1 = leftPoint;
-    var movementPoint1Top = topPoint;
-    loop1:
-        for (let o = 0; o <= unitsNow; o++) {
-            var genName = `human${o} peasant`
-            let human = document.getElementsByClassName(genName)[0];
-            var genName2 = `human${o}_peasant_ally0`
-            let humanImage = document.getElementsByClassName(genName2)[0];
-            if (human == undefined) {
-                continue loop1
+    var movementPoint1Top = topPoint1;
+    var movementPointLeft1 = leftPoint1;
+    var movementPoint2Top = topPoint2;
+    var movementPointLeft2 = leftPoint2;
+    var movementPoint3Top = topPoint3;
+    var movementPointLeft3 = leftPoint3;
+
+    //её рили нужно переделать под 3-4 поинта посмотри ту, которая для боевых
+    var genName = `humans${unitNumber} worker`;
+    var human = document.getElementsByClassName(genName)[0];
+    var genName2 = `humans${unitNumber}_worker_unit`;
+    var humanImage = document.getElementsByClassName(genName2)[0];
+
+    var computedStyleArmy = getComputedStyle(human);
+
+    var unitTop = parseInt(computedStyleArmy.top) //1007
+    var unitLeft = parseInt(computedStyleArmy.left) //637
+    var unitN = parseInt(unitNumber)
+        // if (!changePointsTogglerKeys[unitN]Keys[unitN]) {
+        //     var changePointsTogglerKeys[unitN] = {
+        //         1: false,
+        //         2: false,
+        //         3: false,
+        //         4: false,
+        //         finished: false,
+
+    //     }
+    //     changePointsTogglerKeys[unitN]Keys[unitN] = true;
+    // }
+
+    // if (!changePointsTogglerKeys[unitN][1]) {
+    changePointsTogglerKeys[unitN]
+    if (((topPoint1 < unitTop || topPoint1 > unitTop) || (leftPoint1 < unitLeft || leftPoint1 > unitLeft)) && !changePointsTogglerKeys[unitN][1]) {
+        changePointsTogglerKeys[unitN][1] = false;
+        var changePoints1 = changeMovePoints(
+                topPoint1,
+                leftPoint1,
+                unitTop,
+                unitLeft,
+                1)
+            // console.log(unitN + " FIRST POINT")
+        let changePointsClearSide = changePoints1.replace(/[0-9]/gi, '')
+        if (changePoints1 == "s1") {
+            humanImage.classList.remove(humanImage.classList.item(1))
+            humanImage.classList.add(`worker-walk-${changePointsClearSide}`);
+            armyMovements.movement_bottom(human, movementPoint1Top);
+            // console.log("S")
+        } else if (changePoints1 == "n1") {
+            humanImage.classList.remove(humanImage.classList.item(1))
+            humanImage.classList.add(`worker-walk-${changePointsClearSide}`);
+            armyMovements.movement_top(human, movementPoint1Top);
+            // console.log("N")
+        } else if (changePoints1 == "e1") {
+            humanImage.classList.remove(humanImage.classList.item(1))
+            humanImage.classList.add(`worker-walk-${changePointsClearSide}`);
+            armyMovements.movement_left(human, movementPointLeft1);
+            // console.log("E")
+        } else if (changePoints1 == "w1") {
+            humanImage.classList.remove(humanImage.classList.item(1))
+            humanImage.classList.add(`worker-walk-${changePointsClearSide}`);
+            armyMovements.movement_right(human, movementPointLeft1);
+            // console.log("W")
+        }
+    } else {
+        changePointsTogglerKeys[unitN][1] = true;
+    }
+    if (changePointsTogglerKeys[unitN][1] && !changePointsTogglerKeys[unitN][2] && !changePointsTogglerKeys[unitN][3]) {
+        var changePoints2 = changeMovePoints(
+                topPoint2,
+                leftPoint2,
+                unitTop,
+                unitLeft,
+                2)
+            // console.log(unitN + " SECOND POINT")
+            // } else if (!changePointsTogglerKeys[unitN][3] && changePointsTogglerKeys[unitN][2] && changePointsTogglerKeys[unitN][1]) {
+        if (changePoints2 != undefined) {
+            let changePointsClearSide = changePoints2.replace(/[0-9]/gi, '')
+
+
+            if (changePoints2 == "s2") {
+                humanImage.classList.remove(humanImage.classList.item(1))
+                humanImage.classList.add(`worker-walk-${changePointsClearSide}`);
+                armyMovements.movement_bottom(human, movementPoint2Top);
+                // console.log("S2")
+            } else if (changePoints2 == "n2") {
+                humanImage.classList.remove(humanImage.classList.item(1))
+                humanImage.classList.add(`worker-walk-${changePointsClearSide}`);
+                armyMovements.movement_top(human, movementPoint2Top);
+                // console.log("N2")
+            } else if (changePoints2 == "e2") {
+                humanImage.classList.remove(humanImage.classList.item(1))
+                humanImage.classList.add(`worker-walk-${changePointsClearSide}`);
+                armyMovements.movement_right(human, movementPointLeft2);
+                // console.log("E2")
+            } else if (changePoints2 == "w2") {
+                humanImage.classList.remove(humanImage.classList.item(1))
+                humanImage.classList.add(`worker-walk-${changePointsClearSide}`);
+                armyMovements.movement_left(human, movementPointLeft2);
+                // console.log("W2")
             }
-            var computedStyleArmy = getComputedStyle(human);
-            var leftNumber = parseInt(computedStyleArmy.left)
-            if (leftNumber >= movementPointLeft1) {
-                armyMovements.movement_left(human)
-                armyMovements.movement_top(human, movementPoint1Top)
-            } else {
-
-                humanImage.classList.add("worker-idle-n");
-                setTimeout(() => {
-                    humanImage.classList.remove("worker-idle-n");
-                    humanImage.classList.add("worker-build-n");
-                    canBuild(event)
-                    setTimeout(() => {
-                        humanImage.classList.add("worker-idle-n");
-                        humanImage.classList.remove("worker-build-n");
-                        setTimeout(() => {
-                            humanImage.classList.add("worker-walk-e");
-                            humanImage.classList.remove("worker-idle-n");
-                        }, 66);
-                    }, 5000);
-                }, 1000);
-                clearInterval(intervalId)
-                setTimeout(() => {
-                    startIntervalRevPeasant(event, pointsToCastle.medium1.leftPoint, pointsToCastle.medium1.topPoint)
-                    console.log("Интервал пащеел");
-                }, 6000);
-
-
-            }
-
+        } else {
+            changePointsTogglerKeys[unitN][2] = true;
         }
 
+    }
+
+    if (changePointsTogglerKeys[unitN][2] && changePointsTogglerKeys[unitN][1] && !changePointsTogglerKeys[unitN][3]) {
+        var changePoints3 = changeMovePoints(
+                topPoint3,
+                leftPoint3,
+                unitTop,
+                unitLeft,
+                3)
+            // console.log(unitN + " THIRD POINT")
+            // } else if (!changePointsTogglerKeys[unitN][3] && changePointsTogglerKeys[unitN][2] && changePointsTogglerKeys[unitN][1]) {
+        if (changePoints3 != undefined) {
+            let changePointsClearSide = changePoints3.replace(/[0-9]/gi, '')
+            if (changePoints3 == "s3") {
+                humanImage.classList.remove(humanImage.classList.item(1))
+                humanImage.classList.add(`worker-walk-${changePointsClearSide}`);
+                armyMovements.movement_bottom(human, movementPoint3Top);
+                // console.log("S3")
+            } else if (changePoints3 == "n3") {
+                humanImage.classList.remove(humanImage.classList.item(1))
+                humanImage.classList.add(`worker-walk-${changePointsClearSide}`);
+                armyMovements.movement_top(human, movementPoint3Top);
+                // console.log("N3")
+            } else if (changePoints3 == "e3") {
+                humanImage.classList.remove(humanImage.classList.item(1))
+                humanImage.classList.add(`worker-walk-${changePointsClearSide}`);
+                armyMovements.movement_left(human, movementPointLeft3);
+                // console.log("E3")
+            } else if (changePoints3 == "w3") {
+                humanImage.classList.remove(humanImage.classList.item(1))
+                humanImage.classList.add(`worker-walk-${changePointsClearSide}`);
+                armyMovements.movement_right(human, movementPointLeft3);
+                // console.log("W3")
+            }
+        } else {
+            changePointsTogglerKeys[unitN][3] = true;
+            changePointsTogglerKeys[unitN].finished = true;
+        }
+    }
+
+    if (changePointsTogglerKeys[unitN].finished) {
+
+        // var result = id_array_workers.indexOf(intervalID)
+        clearInterval(id_array_workers[unitN])
+            // id_array_workers.splice(result, 1);
+
+        if (workType == "constructBuilding" && !spotBuildingsState[unitN]) {
+            humanImage.classList.remove(humanImage.classList.item(1));
+            humanImage.classList.add("worker-idle-n");
+            setTimeout(() => {
+                humanImage.classList.remove("worker-idle-n");
+                humanImage.classList.add("worker-build-n");
+
+                canBuild(event)
+                setTimeout(() => {
+                    humanImage.classList.add("worker-idle-n");
+                    humanImage.classList.remove("worker-build-n");
+                    setTimeout(() => {
+                        spotBuildingsState[unitN] = true
+                        startIntervalPeasant(event, topPoint2, leftPoint2, topPoint1, leftPoint1, pointsToBuilding.initWorkerPos.topPoint, pointsToBuilding.initWorkerPos.leftPoint, unitNumber, workType, true)
+                        console.log("Обратный интервал");
+
+                        console.log("Достроилось")
+                    }, 2000);
+                }, 5000);
+            }, 1000);
+            console.log("finished interval")
+            changePointsTogglerKeys[unitN][1] = false;
+            changePointsTogglerKeys[unitN][2] = false;
+            changePointsTogglerKeys[unitN][3] = false;
+            changePointsTogglerKeys[unitN][4] = false;
+            changePointsTogglerKeys[unitN].finished = false;
+            return
+        } else if (reverse) {
+            clearInterval(intervalId)
+            console.log("finished interval else")
+            changePointsTogglerKeys[unitN][1] = false;
+            changePointsTogglerKeys[unitN][2] = false;
+            changePointsTogglerKeys[unitN][3] = false;
+            changePointsTogglerKeys[unitN][4] = false;
+            changePointsTogglerKeys[unitN].finished = false;
+
+            humanImage.classList.remove(humanImage.classList.item(1))
+            humanImage.classList.add("worker-idle-e");
+            setTimeout(() => {
+                buildMode = true;
+                buildModeHidden = true;
+                removeUnit(human)
+                toggleBuild()
+            }, 1500);
+            return
+        }
+
+
+        if (workType == "garden") {
+            //тут нет реверса и просто исчезает рабочий
+        } else if (workType == "gold") {
+            //тут туда и обратно а потом вновь через таймаут но уже не с начала а с гардена (добавление значений?)
+        } else if (workType == "wood") {
+            //тут туда и обратно а потом вновь через таймаут но уже не с начала а с гардена (добавление значений?)
+        } else if (workType == "food") {
+            //тут туда и обратно а потом вновь через таймаут но уже не с начала а с гардена (добавление значений?)
+        } else if (workType == "stone") {
+            //тут туда и обратно а потом вновь через таймаут но уже не с начала а с гардена (добавление значений?)
+        }
+        return
+    }
+
+
+    // else {
+
+
+    //     setTimeout(() => {
+    //         startIntervalRevPeasant(event, pointsToCastle.medium1.leftPoint, pointsToCastle.medium1.topPoint)
+    //         console.log("Интервал пащеел");
+    //     }, 6000);
+
+
+    // }
+
+
+
+}
+var pointChangeLock = false;
+
+var changePointsTogglerKeys = {
+    1: {
+        1: false,
+        2: false,
+        3: false,
+        4: false,
+        finished: false
+    },
+    2: {
+        1: false,
+        2: false,
+        3: false,
+        4: false,
+        finished: false
+    },
+    3: {
+        1: false,
+        2: false,
+        3: false,
+        4: false,
+        finished: false
+    },
+    4: {
+        1: false,
+        2: false,
+        3: false,
+        4: false,
+        finished: false
+    },
+    5: {
+        1: false,
+        2: false,
+        3: false,
+        4: false,
+        finished: false
+    },
+    6: {
+        1: false,
+        2: false,
+        3: false,
+        4: false,
+        finished: false
+    },
+    7: false,
+    8: false,
+    9: false,
+    10: false,
+    11: false,
+    12: false,
+    13: false,
+    14: false,
+    15: false,
+    16: false,
+    17: false,
+    18: false,
+    19: false,
+    20: false,
+    21: false,
+    22: false,
+    23: false,
+    24: false,
+    25: false,
+    26: false,
+    27: false,
+    28: false,
+    29: false,
+    30: false,
+    31: false,
+    32: false,
+    33: false,
+    34: false,
+    35: false,
+    36: false,
+    37: false,
+    38: false,
+    39: false,
+    40: false,
+    41: false,
+    42: false,
+    43: false,
+    44: false,
+    35: false,
+    46: false,
+    47: false,
+    48: false,
+    49: false,
+    50: false,
+    51: false,
+    52: false,
+    53: false,
+    54: false,
+    55: false,
+    56: false,
+    57: false,
+    58: false,
+    59: false,
+    60: false,
+    61: false,
+    62: false,
+    63: false,
+    64: false,
+    65: false,
+    66: false,
+    67: false,
+    68: false,
+    69: false,
+    60: false,
 }
 
-function startIntervalRevUnit(event, left, top, unit) {
-    // Store the id of the interval so we can clear it later
-    intervalIdUnit = setInterval(movementUnitReverse.bind(window, left, top, unit), 66);
+
+function changeMovePoints(topPoint, leftPoint, unitTop, unitLeft, i) {
+
+
+    if (unitTop >= topPoint && !pointChangeLock) {
+        if (unitTop == topPoint) {
+            pointChangeLock = true;
+            // changePointsTogglerKeys[unitN][i] = true;
+            // return "none"
+        } else {
+            return `n${i}`
+        }
+
+    } else {
+        pointChangeLock = false;
+
+    }
+
+    if (unitTop <= topPoint && !pointChangeLock) {
+        if (unitTop == topPoint) {
+            pointChangeLock = true;
+            // changePointsTogglerKeys[unitN][i] = true;
+            // return "none"
+        } else {
+            return `s${i}`
+        }
+    } else {
+        pointChangeLock = false;
+
+    }
+
+    if (unitLeft <= leftPoint && !pointChangeLock) {
+        if (unitLeft == leftPoint) {
+            pointChangeLock = true;
+            // changePointsTogglerKeys[unitN][i] = true;
+            // return "none"
+        } else {
+            return `e${i}`
+        }
+    } else {
+        pointChangeLock = false;
+
+    }
+
+    if (unitLeft >= leftPoint && !pointChangeLock) {
+        if (unitLeft == leftPoint) {
+            pointChangeLock = true;
+            // changePointsTogglerKeys[unitN][i] = true;
+            // return "none"
+        } else {
+            return `w${i}`
+        }
+    } else {
+        pointChangeLock = false;
+    }
+
 }
+
+
+//id change
+function startIntervalRevUnit(event, left, top, unit, lock, o) {
+    console.log("Интервал создан")
+        // Store the id of the interval so we can clear it later
+    id_array.push(setInterval(movementUnitReverse.bind(window, left, top, unit, lock, o), 66));
+}
+
+var id_array = []
 
 // function startIntervalUnit(event, left, top, unit) {
 //     // Store the id of the interval so we can clear it later
@@ -2310,8 +3060,24 @@ function startIntervalRevUnit(event, left, top, unit) {
 // }
 //movement Animation Cotrollers
 var movementAC = {
-    left: false,
-    wait: false
+    // Гененировать автоматически типа бесконечный аррай
+    first: {
+        left: false,
+        wait: false
+    },
+    second: {
+        left: false,
+        wait: false
+    },
+    third: {
+        left: false,
+        wait: false
+    },
+    fourth: {
+        left: false,
+        wait: false
+    }
+
 }
 
 var unitsReserveTotal = 0;
@@ -2323,7 +3089,7 @@ var unitsReserve = {
     archer: {
         count: 0
     },
-    maseman: {
+    maceman: {
         count: 0
     },
     longbowman: {
@@ -2333,8 +3099,10 @@ var unitsReserve = {
 
 var buildUnitLock = false;
 
-function movementUnitReverse(leftPoint, topPoint, unit) {
+function movementUnitReverse(leftPoint, topPoint, unit, lock, o) {
     // console.log(unitsNow)
+
+    console.log("Интервал работает")
     buildUnitLock = true;
     var movementPointLeft1 = leftPoint;
     var movementPoint1Top = topPoint;
@@ -2342,7 +3110,7 @@ function movementUnitReverse(leftPoint, topPoint, unit) {
         for (let o = 0; o <= unitsNow; o++) {
             var genName = `human${o} ${unit}`
             let human = document.getElementsByClassName(genName)[0];
-            var genName2 = `human${o}_${unit}_ally0`
+            var genName2 = `human${o}_${unit}_unit`
             let humanImage = document.getElementsByClassName(genName2)[0];
             if (human == undefined) {
                 continue loop1
@@ -2350,49 +3118,95 @@ function movementUnitReverse(leftPoint, topPoint, unit) {
             var computedStyleArmy = getComputedStyle(human);
             var leftNumber = parseInt(computedStyleArmy.left)
 
-            if (!movementAC.wait) {
-                movementAC.wait = true;
-                humanImage.classList.remove(`${unit}-idle-s`);
-                humanImage.classList.add(`${unit}-idle-se`);
+            var locks = Object.keys(movementAC)
+            for (key of locks) {
+                if (lock == key) {
+                    movementAC[lock].wait = true;
+                    humanImage.classList.remove(`${unit}-idle-s`);
+                    humanImage.classList.add(`${unit}-idle-se`);
+                }
             }
 
+            // if (!movementAC[lock].wait) {
+            //     movementAC[lock].wait = true;
+            //     humanImage.classList.remove(`${unit}-idle-s`);
+            //     humanImage.classList.add(`${unit}-idle-se`);
+            // } else if (!movementAC[lock].wait) {
+            //     movementAC[lock].wait = true;
+            //     humanImage.classList.remove(`${unit}-idle-s`);
+            //     humanImage.classList.add(`${unit}-idle-se`);
+            // } else if (!movementAC[lock].wait) {
+            //     movementAC[lock].wait = true;
+            //     humanImage.classList.remove(`${unit}-idle-s`);
+            //     humanImage.classList.add(`${unit}-idle-se`);
+            // } else if (!movementAC[lock].wait) {
+            //     movementAC[lock].wait = true;
+            //     humanImage.classList.remove(`${unit}-idle-s`);
+            //     humanImage.classList.add(`${unit}-idle-se`);
+            // }
+
             if (leftNumber <= movementPointLeft1 && movementPointLeft1 >= leftNumber) {
-                if (!movementAC.left) {
-                    movementAC.left = true;
-                    humanImage.classList.add(`${unit}-walk-e`);
-                    humanImage.classList.remove(`${unit}-idle-se`);
+                for (key of locks) {
+                    if (lock == key) {
+                        movementAC[key].left = true;
+                        humanImage.classList.add(`${unit}-walk-e`);
+                        humanImage.classList.remove(`${unit}-idle-se`);
+                    }
                 }
                 armyMovements.movement_right(human)
                 armyMovements.movement_top(human, movementPoint1Top)
             } else if (leftNumber >= movementPointLeft1 && movementPointLeft1 <= leftNumber) {
+
+
                 humanImage.classList.remove(`${unit}-walk-e`);
                 humanImage.classList.add(`${unit}-idle-e`);
-                clearInterval(intervalIdUnit)
-                movementAC.left = false;
-                movementAC.wait = false;
 
-                unitsReserveTotal++
-                unitsReserve[unit].count++
-
-                    setTimeout(() => {
-                        humanImage.classList.remove(`${unit}-idle-e`);
-                        removeUnit(human)
-                        buildUnitLock = false;
-                    }, 1500);
-
+                for (key of locks) {
+                    movementAC[key].wait = false;
+                    movementAC[key].left = false;
+                }
+                setTimeout(() => {
+                    humanImage.classList.remove(`${unit}-idle-e`);
+                    removeUnit(human)
+                }, 1500);
+                clearInterval(id_array[o])
+                    // id_array.shift()
+                return
             }
+
+
+
         }
 }
 
+function removeInterval() {
+    // for (let i = 0; i < id_array.length; i++) {
+    // if (id_array.length - 1) {
+    //     setTimeout(() => {
+    //         clearInterval(id_array[i])
+    //         id_array.shift()
+    //         console.log("Очищен через сек " + i);
+    //     }, 1000);
+    // } else {
+
+    console.log(id_array)
+    clearInterval(id_array[0])
+    id_array.shift()
+    console.log("Очищен " + 0);
+    // }
+    // }
+}
+
+
 function canBuild(event) {
     if (buildTiny) {
-        buildTinyStart()
+        buildTinyStart(event)
         buildTiny = false;
     } else if (buildSmall) {
-        buildSmallStart()
+        buildSmallStart(event)
         buildSmall = false;
     } else if (buildMedium) {
-        buildMediumStart()
+        buildMediumStart(event)
         buildMedium = false;
     } else if (buildBig) {
         buildBigStart(event)
@@ -2410,10 +3224,10 @@ function movementtestReverse(leftPoint, topPoint) {
     var movementPointLeft1 = leftPoint;
     var movementPoint1Top = topPoint;
     loop1:
-        for (let o = 0; o <= unitsNow; o++) {
-            var genName = `human${o} peasant`
+        for (let o = 0; o <= workersNow; o++) {
+            var genName = `humans${o} worker`
             let human = document.getElementsByClassName(genName)[0];
-            var genName2 = `human${o}_peasant_ally0`
+            var genName2 = `humans${o}_worker_unit`
             let humanImage = document.getElementsByClassName(genName2)[0];
             if (human == undefined) {
                 continue loop1
@@ -2427,14 +3241,14 @@ function movementtestReverse(leftPoint, topPoint) {
                 humanImage.classList.add("worker-idle-e");
                 humanImage.classList.remove("worker-walk-e");
                 setTimeout(() => {
-                    buildMode = false;
+                    // buildMode = false;
                     clearInterval(intervalId)
                     removeUnit(human)
 
-                    if (!changed) {
-                        unitsNow = unitsNow - 1
-                        changed = true;
-                    }
+                    // if (!changed) {
+                    //     unitsNow = unitsNow - 1
+                    //     changed = true;
+                    // }
                 }, 1000);
             }
         }
@@ -2444,11 +3258,90 @@ function movementtestReverse(leftPoint, topPoint) {
 function removeUnit(element) {
     element.remove()
 }
+var counter = 0;
+var code = "";
+var prevPointTop = 0;
+var prevPointLeft = 0;
 //указатель координат
-// document.body.addEventListener("mousemove", function(event) {
+// var lands = document.getElementsByClassName("mainLands")[0];
+// lands.addEventListener("mousemove", function(event) {
+//     var position = "top Coord: " + event.offsetX + " left Coord: " + event.offsetY;
+//     let block = document.getElementsByClassName("coordinates")[0]
+//     let block2 = document.getElementsByClassName("coordinates2")[0]
 
-//     var position = "X Coordinate: " + event.clientX + " Y Coordinate: " + event.clientY;
-//     console.log(position);
+//     if (prevPointTop == event.offsetY) {
+//         block.style.backgroundColor = "#d6e00d"
+//         console.log("по ТОПУ выровнялся")
+//     } else if (prevPointLeft == event.offsetX) {
+//         console.log("по ЛЕФТУ выровнялся")
+//         block2.style.backgroundColor = "#d6e00d"
+//     }
+// })
+
+// lands.addEventListener("click", function(event) {
+
+//     if (counter == 0) {
+//         let div = document.createElement("div");
+//         div.className = `coordinates ${event.offsetY} and ${event.offsetX}`;
+//         let parent = document.getElementsByClassName("mainLands")[0];
+//         parent.append(div);
+//         let block = document.getElementsByClassName("coordinates")[0]
+
+//         let div2 = document.createElement("div");
+//         div2.className = `coordinates2 ${event.offsetY} and ${event.offsetX}`;
+//         let parent2 = document.getElementsByClassName("mainLands")[0];
+//         parent2.append(div2);
+//         let block2 = document.getElementsByClassName("coordinates2")[0]
+
+
+//         block.style.top = event.offsetY + "px"
+//         block.style.left = event.offsetX + "px"
+
+//         block2.style.top = event.offsetY + "px"
+//         block2.style.left = event.offsetX + "px"
+
+//         code = `
+//         spot: {
+//             topPoint_1: ${event.offsetY + 20},
+//             leftPoint_1: ${event.offsetX + 11},
+//         `
+//         counter++
+//         console.log(code, counter);
+//         prevPointTop = event.offsetY
+//         prevPointLeft = event.offsetX
+//     } else if (counter == 1) {
+
+//         code = code + `
+//         topPoint_2: ${event.offsetY+ 20},
+//         leftPoint_2: ${event.offsetX+ 11},
+//         `
+//         counter++
+//         console.log(code, counter);
+//         prevPointTop = event.offsetY
+//         prevPointLeft = event.offsetX
+//     } else if (counter == 2) {
+//         code = code + `
+//         topPoint_3: ${event.offsetY+ 20},
+//             leftPoint_3: ${event.offsetX+ 11},
+//         `
+//         counter++
+//         console.log(code, counter);
+//         prevPointTop = event.offsetY
+//         prevPointLeft = event.offsetX
+//     } else if (counter == 3) {
+//         code = code + `
+//         topPoint_4: ${event.offsetY+ 20},
+//             leftPoint_4: ${event.offsetX+ 11},
+//     }
+//         `
+//         counter++
+//         console.log(code, counter);
+//         prevPointTop = event.offsetY
+//         prevPointLeft = event.offsetX
+//     }
+
+
+
 // });
 
 //ресурсы
@@ -2474,10 +3367,19 @@ const showresources = setInterval(() => {
     footmanReserve.innerHTML = unitsReserve.footman.count;
     let archerReserve = document.getElementsByClassName("count-archer")[0]
     archerReserve.innerHTML = unitsReserve.archer.count;
-    let masemanReserve = document.getElementsByClassName("count-maseman")[0]
-    masemanReserve.innerHTML = unitsReserve.maseman.count;
+    let macemanReserve = document.getElementsByClassName("count-maceman")[0]
+    macemanReserve.innerHTML = unitsReserve.maceman.count;
     let longbowmanReserve = document.getElementsByClassName("count-longbowman")[0]
     longbowmanReserve.innerHTML = unitsReserve.longbowman.count;
+
+    // let footmanReserveBuild = document.getElementsByClassName("build-count-footman")[0]
+    // footmanReserveBuild.innerHTML = buildQue.spot1.footman.count;
+    // let archerReserveBuild = document.getElementsByClassName("build-count-archer")[0]
+    // archerReserveBuild.innerHTML = buildQue.archer;
+    // let macemanReserveBuild = document.getElementsByClassName("build-count-maceman")[0]
+    // macemanReserveBuild.innerHTML = buildQue.maceman;
+    // let longbowmanReserveBuild = document.getElementsByClassName("build-count-longbowman")[0]
+    // longbowmanReserveBuild.innerHTML = buildQue.longbowman;
 }, 250);
 
 
@@ -2487,24 +3389,24 @@ function unitCreateAnimations(unit, action) {
 
     var direction = ["s", "se", "e", "ne", "n", "nw", "w", "sw"]
     var sheet = window.document.styleSheets[1];
-    if (unit == "worker") {
-        for (let i = 0; i < 8; i++) {
-            sheet.insertRule(`.${unit}-${action}-${direction[i]} {
-                position: relative;
-                height: 40px;
-                width: 40px;
-                background-image: url("units/${unit}/${action}/${direction[i]} (1).gif") !important;
-                background-repeat: no-repeat;
-    }`, sheet.cssRules.length);
-        }
-    } else {
-        for (let i = 0; i < 8; i++) {
-            sheet.insertRule(`.${unit}-${action}-${direction[i]} {
+    // if (unit == "worker") {
+    //     for (let i = 0; i < 8; i++) {
+    //         sheet.insertRule(`.${unit}-${action}-${direction[i]} {
+    //             position: relative;
+    //             height: 40px;
+    //             width: 40px;
+    //             background-image: url("units/${unit}/${action}/${direction[i]} (1).gif") !important;
+    //             background-repeat: no-repeat;
+    // }`, sheet.cssRules.length);
+    //     }
+    // } else {
+    for (let i = 0; i < 8; i++) {
+        sheet.insertRule(`.${unit}-${action}-${direction[i]} {
             
             content: url("units/${unit}/${action}/${direction[i]} (1).gif")
     }`, sheet.cssRules.length);
-        }
     }
+    // }
 
 }
 
@@ -2545,14 +3447,310 @@ function unitCreateAnimations(unit, action) {
 //     }
 // }
 
-var myImage = document.getElementsByClassName("castle-img")[0]
 
-myImage.addEventListener('click', function() {
-    console.log('My width is: ', this.naturalWidth);
-    console.log('My height is: ', this.naturalHeight);
-});
+//попытка сделать нормальное строительство с произвольным размещением.
+// var myImage = document.getElementsByClassName("castle-img")[0]
 
-var restrictedAreas = {
-    spot1: [1, 6]
+// myImage.addEventListener('click', function() {
+//     console.log('My width is: ', this.naturalWidth);
+//     console.log('My height is: ', this.naturalHeight);
+// });
+
+// var restrictedAreas = {
+//     spot1: [1, 6]
+
+// }
+
+
+
+// var man = `barracks-icon`
+// var footmanBtn = document.getElementsByClassName(man)[0]
+
+// footmanBtn.addEventListener("click", abc, true)
+
+// function abc(event) {
+//     console.log("footman created")
+
+//     let unit = "footman"
+//     createFakeUnit(unit, pointsToBuilding.medium1.topPoint, pointsToBuilding.medium1.leftPoint, "e")
+//     let name = `human${unitsNow-1}_${unit}_unit`
+//     let mane = document.getElementsByClassName(name)[0]
+//     mane.classList.add(`${unit}-idle-s`);
+//     event.stopPropagation()
+//     elBarracksLocks.spot1 = true;
+//     startIntervalRevUnit(event, pointsToCastle.medium1.leftPoint, pointsToCastle.medium1.topPoint, "footman")
+
+// }
+var unitCost = {
+    footman: {
+        gold: 15,
+        food: 30
+    }
+}
+
+var buildQue = {
+    spot1: {
+        footman: {
+            count: 1,
+            lock: "first"
+        },
+        archer: {
+            count: 1,
+            lock: "second"
+        },
+        maceman: {
+            count: 1,
+            lock: "third"
+        },
+        longbowman: {
+            count: 1,
+            lock: "fourth"
+        }
+    }
+
+}
+
+var buildQueTotal = 4;
+//размножить на все споты
+var buildQueSpot = buildQue.spot1.footman.count +
+    buildQue.spot1.archer.count +
+    buildQue.spot1.maceman.count +
+    buildQue.spot1.longbowman.count
+var ready = false;
+
+// function startIntervalHire(event, spot, unit, lock) {
+// 
+//     // Store the id of the interval so we can clear it later
+//     intervalId = setInterval(finalCreateUnit.bind(window, event, spot, unit, lock), 12000);
+// }
+
+function hireMan(event, spot, unit, lock) {
+
+    // && buildUnitLock == false удален из условий
+    if (spot == "spot1") {
+
+        buildQue.spot1[unit].count++
+            buildQueTotal++
+            // startIntervalHire(event, spot, unit, lock)
+    } else if (spot == "spot2") {
+
+    }
+}
+
+async function finalCreateUnit() {
+
+
+    function timer(v) {
+        return new Promise(function(r) {
+            return setTimeout(r, v);
+        });
+    }
+    // var timeout = timeout + (buildQueTotal * 1000)
+    //размножить на все споты пока что только СПОТ1!
+    for (let i = 0; i < buildQueTotal; i++) {
+        var spots = Object.keys(buildQue)
+        for (spot of spots) {
+            var units = Object.keys(buildQue[spot])
+            for (unit of units) {
+                if (buildQue[spot][unit].count > 0) {
+
+
+                    createFakeUnit(unit, pointsToBuilding.medium1.topPoint, pointsToBuilding.medium1.leftPoint, "e")
+                        //тут было Unitsnow-1
+                    let name = `human${unitsNow-1}_${unit}_unit`
+                    let mane = document.getElementsByClassName(name)[0]
+                    mane.classList.add(`${unit}-idle-s`);
+                    //unit1 change
+                    intervalCleared = false;
+
+                    startIntervalRevUnit(event, pointsToCastle.medium1.leftPoint, pointsToCastle.medium1.topPoint, unit, buildQue[spot][unit].lock)
+
+                    // event.stopPropagation()
+                    console.log(unit + " created" + " in " + spot)
+                    gold = gold - unitCost.footman.gold
+                    food = food - unitCost.footman.food
+
+                    unitsReserveTotal++
+                    unitsReserve[unit].count++
+                        buildQue[spot][unit].count--
+                        buildQueTotal--
+                        i--
+                        await timer(unitBuildTime[unit] * 1000);
+                    // тутн ужно мутить с интервалами что-то и временем. Пока работает интервал и оно не удалило все - работает но потом... мб есть другой способ передвижения юнитов?
+
+                }
+            }
+        }
+
+    }
+    ready = false;
+}
+
+var unitBuildTime = {
+    footman: 4,
+    archer: 5,
+    maceman: 8,
+    longbowman: 10
+}
+
+function demolishState(event) {
+    event.target.classList.toggle("disabled")
+    console.log("demolish on")
+        // event.stopPropagation()
+    var mainLandMedium = document.getElementsByClassName("building-medium spot build")
+    for (let spot = 0; spot < mainLandMedium.length; spot++) {
+        mainLandMedium[spot].addEventListener("click", demolishMedium)
+    }
+
+    var mainLandTiny = document.getElementsByClassName("building-tiny spot build")
+    for (let spot = 0; spot < mainLandTiny.length; spot++) {
+        mainLandTiny[spot].addEventListener("click", demolishTiny)
+    }
+
+}
+
+function returnToMain(event) {
+
+    if (event.target.classList[0] == "sub-controls_left-img_active") {
+        let buildings = document.getElementsByClassName("buildings-wrapper")[0]
+        buildings.classList.toggle("hidden")
+        let mainCotrols = document.getElementsByClassName(" main-controls")[0]
+        mainCotrols.classList.toggle("hidden")
+        var subLeftBtn = document.getElementsByClassName("sub-controls_left-img_active")[0]
+
+        subLeftBtn.classList.toggle("sub-controls_left-img_inactive")
+        subLeftBtn.classList.toggle("sub-controls_left-img_active")
+    }
+}
+
+function buildState() {
+    toggleBuild()
+    var buildInterface = document.getElementsByClassName("buildings-wrapper")[0]
+
+    buildInterface.classList.toggle("hidden")
+
+    var mainCotrols = document.getElementsByClassName(" main-controls")[0]
+
+    mainCotrols.classList.toggle("hidden")
+
+    var subLeftBtn = document.getElementsByClassName("sub-controls_left-img_inactive")[0]
+
+    subLeftBtn.classList.toggle("sub-controls_left-img_inactive")
+    subLeftBtn.classList.toggle("sub-controls_left-img_active")
+
+}
+
+function demolishMedium(event) {
+    console.log(event.currentTarget)
+    demolishMediumStart(event)
+}
+
+function demolishTiny(event) {
+    console.log(event.currentTarget)
+    demolishTinyStart(event)
+}
+
+function demolishMediumSupport() {
+    var mainLand = document.getElementsByClassName("building-medium spot build")
+    for (let spot = 0; spot < mainLand.length; spot++) {
+        mainLand[spot].removeEventListener("click", demolishMedium)
+    }
+}
+
+function demolishMediumStart(event) {
+    var building = event.currentTarget
+
+    //убираем слухатели
+    demolishMediumSupport()
+
+    //Возможные проблемы с наслоением слушателей
+    event.currentTarget.removeEventListener('click', barracksHireListner)
+
+
+    debugger
+    var spot = building.classList[1]
+    var unitNumber = spot.replace(/[a-z]/gi, '')
+    spotBuildingsState[unitNumber] = false
+
+    building.classList.remove(building.classList.item(3), building.classList.item(4), building.classList.item(5), building.classList.item(6))
+    building.classList.add("not-build")
+    building.childNodes[1].classList.remove(building.childNodes[1].classList.item(1))
+
+    building.classList.add("demolishProsesessBig_stadia1")
+
+    setTimeout(() => {
+        building.classList.remove("demolishProsesessBig_stadia1")
+        building.classList.add("demolishProsesessBig_stadia2")
+    }, 1500);
+    setTimeout(() => {
+        building.classList.remove("demolishProsesessBig_stadia2")
+        building.classList.add("demolishProsesessBig_stadia3")
+    }, 3000);
+    setTimeout(() => {
+        building.classList.remove("demolishProsesessBig_stadia3")
+        building.classList.add("demolishProsesessBig_stadia4")
+    }, 4500);
+    setTimeout(() => {
+        building.classList.remove("demolishProsesessBig_stadia4")
+
+    }, 7000);
+}
+
+function demolishTinySupport() {
+    var mainLand = document.getElementsByClassName("building-tiny spot build")
+    for (let spot = 0; spot < mainLand.length; spot++) {
+        mainLand[spot].removeEventListener("click", demolishTiny)
+    }
+
+}
+
+function demolishTinyStart(event) {
+    var building = event.currentTarget
+
+    //убираем слухатели
+    demolishTinySupport()
+
+    var spot = building.classList[1]
+    var unitNumber = spot.replace(/[a-z]/gi, '')
+    spotBuildingsState[unitNumber] = false
+
+
+
+    building.classList.remove(building.classList.item(3), building.classList.item(4), building.classList.item(5), building.classList.item(6))
+    building.classList.add("not-build")
+    building.childNodes[1].classList.remove(building.childNodes[1].classList.item(1))
+
+
+    building.classList.add("demolishProsesessTiny_stadia1")
+
+    setTimeout(() => {
+        building.classList.remove("demolishProsesessTiny_stadia1")
+        building.classList.add("demolishProsesessTiny_stadia2")
+    }, 1500);
+    setTimeout(() => {
+        building.classList.remove("demolishProsesessTiny_stadia2")
+        building.classList.add("demolishProsesessTiny_stadia3")
+    }, 3000);
+    setTimeout(() => {
+        building.classList.remove("demolishProsesessTiny_stadia3")
+        building.classList.add("demolishProsesessTiny_stadia4")
+    }, 4500);
+    setTimeout(() => {
+        building.classList.remove("demolishProsesessTiny_stadia4")
+
+        //ещё один способ убрать и создать заного
+        // building.remove()
+
+        // let div = document.createElement("div");
+        // div.className = `${building.classList.item(0)} ${building.classList.item(1)} ${building.classList.item(2)} not-build`;
+        // let parent = document.getElementsByClassName("mainLands")[0];
+        // parent.append(div);
+
+        // let img = document.createElement("img");
+        // img.className = "building-tiny_img"
+        // let parentName = `${building.classList.item(0)} ${building.classList.item(1)} ${building.classList.item(2)} not-build`
+        // let parentDiv = document.getElementsByClassName(parentName)[0];
+        // parentDiv.append(img);
+    }, 7000);
 
 }
