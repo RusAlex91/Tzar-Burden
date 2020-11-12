@@ -1,3 +1,4 @@
+// начало документа
 // setInterval(logs,4000)
 // function logs() {
 // console.log(chosenTemp)
@@ -1866,6 +1867,7 @@ var buildSmall = false;
 var buildMedium = false;
 var buildBig = false;
 var buildTiny = false;
+var buildField = false;
 var canBuildField = false;
 // var buildingNow = {
 //     stadia1: false,
@@ -1915,11 +1917,33 @@ function buildTinyStart(event) {
 
 }
 
+function buildFieldStart(event) {
+    var building = document.getElementsByClassName("buildProsesessField_stadia1")[0]
+    setTimeout(() => {
+        building.classList.remove("buildProsesessField_stadia1")
+        building.classList.add("buildProsesessField_stadia2")
+    }, 1500);
+    setTimeout(() => {
+        building.classList.remove("buildProsesessField_stadia2")
+        building.classList.add("buildProsesessField_stadia3")
+    }, 3000);
+    setTimeout(() => {
+        building.classList.remove("buildProsesessField_stadia3")
+        building.classList.add("buildProsesessField_stadia4")
+    }, 4500);
+    setTimeout(() => {
+        buildComplete = true;
+        finalBuild(event)
+    }, 5000);
+
+}
+
 var alreadySelected = false;
 
 function finalBuild(event) {
     var barracks = document.getElementsByClassName("barracks building")[0]
     var house = document.getElementsByClassName("house building")[0]
+    var field = document.getElementsByClassName("field building")[0]
     if (canBuildBarracks && buildComplete) {
         buildComplete = false;
         canBuildBarracks = false;
@@ -1939,8 +1963,24 @@ function finalBuild(event) {
         house.childNodes[1].classList.add("house-complete")
             // createBarracksInterface(event.target.parentNode.classList[1])
             // house.addEventListener('click', barracksHireListner)
+    } else if (canBuildField && buildComplete) {
+        buildComplete = false;
+        canBuildHouse = false;
+        field.childNodes[1].classList.remove("buildProsesessField_stadia4")
+        field.classList.remove("building")
+        field.classList.add("build")
+        let number = getRandomInt(1, 10)
+        let searchQuery = `field-${number}`
+        field.childNodes[1].classList.add(searchQuery)
+        console.log("lox")
     }
 
+}
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min)) + min; //Максимум не включается, минимум включается
 }
 
 var ELcreated = false;
@@ -2163,7 +2203,7 @@ var barracksHire = {
 
 
 function posBuild(building, event) {
-    debugger
+
     event.stopPropagation()
     if (gold >= 250 && building == "barracks") {
         if (buildMode) {
@@ -2199,7 +2239,7 @@ function posBuild(building, event) {
         console.log("here we go filed mazafacka")
         if (buildMode) {
             // buildModeHidden = true;
-            canBuildHouse = true;
+            canBuildField = true;
             showHouseImg()
         }
     }
@@ -2216,7 +2256,7 @@ function posBuildHouse(event) {
 }
 
 function cancelBuildMedium() {
-    debugger
+
     if (buildModeHidden) {
         buildMode = true;
         removeDisabledBuild()
@@ -2257,6 +2297,8 @@ function showBarracksImg() {
 function showHouseImg() {
     var tinyBuildings = document.getElementsByClassName("building-tiny");
     var tinyBuildings_img = document.getElementsByClassName("building-tiny_img");
+
+    //house
     for (let i = 0; i < tinyBuildings.length; i++) {
         if (tinyBuildings[i].classList[3] == "not-build" && buildModeHidden == true && canBuildHouse == true) {
             console.log("можем строить")
@@ -2268,19 +2310,20 @@ function showHouseImg() {
             tinyBuildings_img[i].classList.remove("possible-house")
             tinyBuildings_img[i].classList.remove("grayscale")
         }
+        //field
 
-        if (tinyBuildings[i].classList[3] == "not-build" && buildModeHidden == true && canBuildHouse == true) {
+        if (tinyBuildings[i].classList[3] == "not-build" && buildModeHidden == true && canBuildField == true) {
             console.log("можем строить")
-            tinyBuildings_img[i].classList.add("possible-house")
+
+            tinyBuildings_img[i].classList.add("possible-field")
             tinyBuildings_img[i].classList.add("grayscale")
         } else if (tinyBuildings[i].classList[3] == "not-build" && buildModeHidden == false) {
-
-            tinyBuildings_img[i].classList.remove("possible-house")
+            tinyBuildings_img[i].classList.remove("possible-field")
             tinyBuildings_img[i].classList.remove("grayscale")
         }
     }
 }
-
+//следующий этап - ниже
 
 
 //только для бараков?
@@ -2319,7 +2362,7 @@ var mediumBuildingSites = document.querySelectorAll("img.building-medium_img");
             createWorker(
                 pointsToBuilding.initWorkerPos.topPoint,
                 pointsToBuilding.initWorkerPos.leftPoint,
-                "w", unitNumber)
+                "w", unitNumber, "idle")
             startIntervalPeasant(
                 e,
                 pointsToBuilding[spot].topPoint_1,
@@ -2329,7 +2372,7 @@ var mediumBuildingSites = document.querySelectorAll("img.building-medium_img");
                 pointsToBuilding[spot].topPoint_3,
                 pointsToBuilding[spot].leftPoint_3,
                 unitNumber,
-                "constructBuilding")
+                "constructBuilding", spot)
             buildMedium = true;
         }
         if (buildMode == true &&
@@ -2375,7 +2418,7 @@ var tinyBuildingSites = document.querySelectorAll("img.building-tiny_img");
             createWorker(
                 pointsToBuilding.initWorkerPos.topPoint,
                 pointsToBuilding.initWorkerPos.leftPoint,
-                "w", unitNumber)
+                "w", unitNumber, "idle")
             startIntervalPeasant(
                 e,
                 pointsToBuilding[spot].topPoint_1,
@@ -2389,8 +2432,50 @@ var tinyBuildingSites = document.querySelectorAll("img.building-tiny_img");
 
         }
         if (buildMode == true &&
-            canBuildGarden == true && parent == "not-build") {
+            canBuildField == true && parent == "not-build") {
+            e.stopPropagation()
+            el.classList.remove("possible-field")
+            el.classList.remove("grayscale")
 
+
+            el.parentNode.classList.add("field")
+            el.classList.add("buildProsesessField_stadia1")
+            el.parentNode.classList.remove("not-build")
+            el.parentNode.classList.add("building")
+
+            wood = wood - 50;
+            //находим место на котором построено и вычисляем как будет называться юнит
+            var spot = el.parentNode.classList[1]
+            var unitNumber = spot.replace(/[a-z]/gi, '')
+            console.log(unitNumber)
+
+            buildModeHidden = false;
+
+            let buildingsInterface = document.getElementsByClassName("buildings-wrapper")[0]
+            buildingsInterface.classList.toggle("hidden")
+
+            let mainInterface = document.getElementsByClassName("main-controls")[0]
+            mainInterface.classList.toggle("hidden")
+
+            showHouseImg()
+            buildField = true;
+
+            createWorker(
+                pointsToBuilding.initWorkerPos.topPoint,
+                pointsToBuilding.initWorkerPos.leftPoint,
+                "w", unitNumber, "idle")
+
+            startIntervalPeasant(
+                e,
+                pointsToBuilding[spot].topPoint_1,
+                pointsToBuilding[spot].leftPoint_1,
+                pointsToBuilding[spot].topPoint_2,
+                pointsToBuilding[spot].leftPoint_2,
+                pointsToBuilding[spot].topPoint_3,
+                pointsToBuilding[spot].leftPoint_3,
+                unitNumber,
+                "field",
+                spot)
         }
     })
 });
@@ -2399,7 +2484,7 @@ var tinyBuildingSites = document.querySelectorAll("img.building-tiny_img");
 var workersNow = 0;
 
 
-function createWorker(y, x, position, unitNumber) {
+function createWorker(y, x, position, unitNumber, work) {
     var genName = `humans${unitNumber}`
     var sheet = window.document.styleSheets[1];
     sheet.insertRule(`.humans${unitNumber} {
@@ -2426,7 +2511,7 @@ function createWorker(y, x, position, unitNumber) {
 
     let name = `humans${unitNumber}_worker_unit`
     let mane = document.getElementsByClassName(name)[0]
-    mane.classList.add(`worker-idle-${position}`);
+    mane.classList.add(`worker-${work}-${position}`);
     // workersNow++
     console.log("created worker");
 }
@@ -2599,16 +2684,16 @@ function startIntervalRevPeasant(event, left, top) {
     intervalId = setInterval(movementtestReverse.bind(window, left, top, event), 66);
 }
 
-function startIntervalPeasant(event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPoint3, leftPoint3, unitNumber, workType, reverse) {
+function startIntervalPeasant(event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPoint3, leftPoint3, unitNumber, workType, spot, reverse) {
     // Store the id of the interval so we can clear it later
-    id_array_workers[unitNumber] = setInterval(movementtest.bind(window, event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPoint3, leftPoint3, unitNumber, workType, reverse), 66)
+    id_array_workers[unitNumber] = setInterval(movementtest.bind(window, event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPoint3, leftPoint3, unitNumber, workType, spot, reverse), 66)
 }
 //для ручного теста
 var iSAY = false;
 
 var id_array_workers = []
 
-function movementtest(event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPoint3, leftPoint3, unitNumber, workType, reverse) {
+function movementtest(event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPoint3, leftPoint3, unitNumber, workType, spot, reverse) {
     // console.log(unitsNow)
     var movementPoint1Top = topPoint1;
     var movementPointLeft1 = leftPoint1;
@@ -2616,6 +2701,7 @@ function movementtest(event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPo
     var movementPointLeft2 = leftPoint2;
     var movementPoint3Top = topPoint3;
     var movementPointLeft3 = leftPoint3;
+    var buildingSpot = spot;
 
     //её рили нужно переделать под 3-4 поинта посмотри ту, которая для боевых
     var genName = `humans${unitNumber} worker`;
@@ -2787,7 +2873,7 @@ function movementtest(event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPo
             changePointsTogglerKeys[unitN][4] = false;
             changePointsTogglerKeys[unitN].finished = false;
             return
-        } else if (reverse) {
+        } else if (workType == "constructBuilding" && reverse) {
             clearInterval(intervalId)
             console.log("finished interval else")
             changePointsTogglerKeys[unitN][1] = false;
@@ -2808,8 +2894,38 @@ function movementtest(event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPo
         }
 
 
-        if (workType == "garden") {
-            //тут нет реверса и просто исчезает рабочий
+        if (workType == "field" && !spotBuildingsState[unitN]) {
+            humanImage.classList.remove(humanImage.classList.item(1));
+
+            //а если не N? А?
+            humanImage.classList.add("worker-idle-n");
+            setTimeout(() => {
+                humanImage.classList.remove("worker-idle-n");
+                humanImage.classList.add("worker-dig-n");
+
+                canBuild(event)
+                setTimeout(() => {
+                    humanImage.classList.add("worker-idle-n");
+                    humanImage.classList.remove("worker-dig-n");
+                    setTimeout(() => {
+                        spotBuildingsState[unitN] = true
+                        buildMode = true;
+                        buildModeHidden = true;
+                        removeUnit(human)
+                        toggleBuild()
+                        console.log("Достроилось")
+                            //старт интервала на перенос и копание
+                        spawnFieldWorker(buildingSpot)
+                    }, 2000);
+                }, 5000);
+            }, 1000);
+            console.log("finished interval")
+            changePointsTogglerKeys[unitN][1] = false;
+            changePointsTogglerKeys[unitN][2] = false;
+            changePointsTogglerKeys[unitN][3] = false;
+            changePointsTogglerKeys[unitN][4] = false;
+            changePointsTogglerKeys[unitN].finished = false;
+            return
         } else if (workType == "gold") {
             //тут туда и обратно а потом вновь через таймаут но уже не с начала а с гардена (добавление значений?)
         } else if (workType == "wood") {
@@ -2836,6 +2952,36 @@ function movementtest(event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPo
 
 
 
+}
+
+function makeDirection() {
+    var text = "";
+    var possible = "news";
+
+    for (var i = 0; i < 1; i++)
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+
+function spawnFieldWorker(spot) {
+    debugger
+    var site = document.getElementsByClassName(spot)[0];
+    var siteTop = parseInt(window.getComputedStyle(site, null).getPropertyValue("top"));
+    var siteleft = parseInt(window.getComputedStyle(site, null).getPropertyValue("left"));
+
+
+    siteTop = siteTop + getRandomInt(10, 35)
+    siteleft = siteleft + getRandomInt(10, 35)
+    var unitNumber = spot.replace(/[a-z]/gi, '')
+    var direction = makeDirection()
+    createWorker(
+        siteTop,
+        siteleft,
+        direction,
+        unitNumber,
+        "dig"
+    )
 }
 var pointChangeLock = false;
 
@@ -3211,6 +3357,9 @@ function canBuild(event) {
     } else if (buildBig) {
         buildBigStart(event)
         buildBig = false;
+    } else if (buildField) {
+        buildFieldStart(event)
+        buildField = false;
     }
 }
 
@@ -3427,6 +3576,9 @@ function unitCreateAnimations(unit, action) {
     unitCreateAnimations("worker", "idle")
     unitCreateAnimations("worker", "walk")
     unitCreateAnimations("worker", "build")
+    unitCreateAnimations("worker", "dig")
+    unitCreateAnimations("worker", "carry-food")
+
 }())
 
 
@@ -3667,7 +3819,7 @@ function demolishMediumStart(event) {
     event.currentTarget.removeEventListener('click', barracksHireListner)
 
 
-    debugger
+
     var spot = building.classList[1]
     var unitNumber = spot.replace(/[a-z]/gi, '')
     spotBuildingsState[unitNumber] = false

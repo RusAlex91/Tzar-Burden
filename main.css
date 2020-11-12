@@ -525,7 +525,7 @@ body {
     content: url("Buildings/house-euro-1.png");
 }
 
-.possible-filed {
+.possible-field {
     content: url("Buildings/field/type/type-1.png");
 }
 
@@ -684,4 +684,59 @@ body {
     width: 1000px;
     height: 1px;
     background-color: blue;
+}
+
+
+/* field */
+
+.field-1 {
+    content: url("Buildings/field/type/type-1.png");
+}
+
+.field-2 {
+    content: url("Buildings/field/type/type-2.png");
+}
+
+.field-3 {
+    content: url("Buildings/field/type/type-3.png");
+}
+
+.field-4 {
+    content: url("Buildings/field/type/type-4.png");
+}
+
+.field-5 {
+    content: url("Buildings/field/type/type-5.png");
+}
+
+.field-6 {
+    content: url("Buildings/field/type/type-6.png");
+}
+
+.field-7 {
+    content: url("Buildings/field/type/type-7.png");
+}
+
+.field-8 {
+    content: url("Buildings/field/type/type-8.png");
+}
+
+.field-9 {
+    content: url("Buildings/field/type/type-9.png");
+}
+
+.buildProsesessField_stadia1 {
+    content: url("Buildings/field/grow/grow (1).png");
+}
+
+.buildProsesessField_stadia2 {
+    content: url("Buildings/field/grow/grow (2).png");
+}
+
+.buildProsesessField_stadia3 {
+    content: url("Buildings/field/grow/grow (3).png");
+}
+
+.buildProsesessField_stadia4 {
+    content: url("Buildings/field/grow/grow (4).png");
 }
