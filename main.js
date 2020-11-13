@@ -1858,7 +1858,7 @@ buildButton.addEventListener("click", buildState)
 var leftButton = document.getElementsByClassName("sub-controls_left")[0]
 leftButton.addEventListener("click", returnToMain)
     //переменные для доступа к строительству
-var buildMode = true;
+var buildMode = false;
 var buildModeHidden = true;
 var canBuildBarracks = false;
 var canBuildHouse = false;
@@ -1875,6 +1875,17 @@ var canBuildField = false;
 //     stadia3: false,
 //     stadia4: false
 // }
+
+//stone and gold
+var stone = document.getElementsByClassName("stone-resourse")[0]
+stone.addEventListener("click", showResoursesInterface)
+
+function showResoursesInterface(event) {
+    event.stopPropagation()
+    event.target.classList.add("stone-resourse-active")
+}
+
+///
 
 function buildMediumStart(event) {
     var building = document.getElementsByClassName("buildProsesessBig_stadia1")[0]
@@ -1965,7 +1976,7 @@ function finalBuild(event) {
             // house.addEventListener('click', barracksHireListner)
     } else if (canBuildField && buildComplete) {
         buildComplete = false;
-        canBuildHouse = false;
+        canBuildField = false;
         field.childNodes[1].classList.remove("buildProsesessField_stadia4")
         field.classList.remove("building")
         field.classList.add("build")
@@ -2098,11 +2109,15 @@ mainWindow.addEventListener("click", function(event) {
 
     let castle = document.getElementsByClassName("castle")[0];
     castle.classList.remove("spot0-active")
-    event.stopPropagation()
     let interfaceCastle = document.getElementsByClassName("castle-interface")[0]
     interfaceCastle.classList.add("hidden")
+        //откатываем строительство на дефолт
+    buildMode = false;
+    // canBuildBarracks = false
+    // canBuildField = false
+    // canBuildHouse = false
 
-
+    debugger
     cancelBuildMedium()
     cancelBuildTiny()
     var demolishButton = document.getElementsByClassName("demolish-state-icon")[0]
@@ -2110,6 +2125,14 @@ mainWindow.addEventListener("click", function(event) {
     demolishMediumSupport()
     demolishTinySupport()
         // console.log("demolish off?")
+
+    // if (!buildTiny) {
+    //     canBuildField = false;
+    //     canBuildHouse = false;
+    // }
+    // if (!buildMedium) {
+    //     canBuildBarracks = false;
+    // }
 
     if (alreadySelected) {
         alreadySelected = false;
@@ -2124,12 +2147,6 @@ mainWindow.addEventListener("click", function(event) {
         // var footmanBtn = document.getElementsByClassName(man)[0]
         // footmanBtn.removeEventListener("click", hireMan)
     }
-
-
-
-
-
-
 })
 
 
@@ -2213,9 +2230,6 @@ function posBuild(building, event) {
             canBuildBarracks = true;
             showBarracksImg()
         }
-        // else if (!buildMedium) {
-        //     buildMode = false;
-        // }
 
     } else if (gold <= 250 && building == "barracks") {
         alert("нет бабла/еще строится")
@@ -2228,9 +2242,6 @@ function posBuild(building, event) {
             canBuildHouse = true;
             showHouseImg()
         }
-        // else if (!buildTiny) {
-        //     buildMode = false;
-        // }
 
     } else if (gold <= 50 && building == "house") {
         alert("нет бабла/еще строится")
@@ -2250,26 +2261,27 @@ function toggleBuild() {
     iconBuild.classList.toggle("disabled")
 }
 
-function posBuildHouse(event) {
-    event.stopPropagation()
-
-}
 
 function cancelBuildMedium() {
-
+    debugger
     if (buildModeHidden) {
-        buildMode = true;
+        buildMode = false;
         removeDisabledBuild()
+    } else if (!buildModeHidden) {
+        buildMode = false;
     }
     showBarracksImg()
 }
 
 function cancelBuildTiny() {
     if (buildModeHidden) {
-        buildMode = true;
+        buildMode = false;
         removeDisabledBuild()
+    } else if (!buildModeHidden) {
+        buildMode = false;
     }
     showHouseImg()
+
 }
 
 function removeDisabledBuild() {
@@ -2281,12 +2293,12 @@ function showBarracksImg() {
     var mediumBuildings = document.getElementsByClassName("building-medium");
     var mediumBuildings_img = document.getElementsByClassName("building-medium_img");
     for (let i = 0; i < mediumBuildings.length; i++) {
-        if (mediumBuildings[i].classList[3] == "not-build" && buildModeHidden == true && canBuildBarracks == true) {
+        if (mediumBuildings[i].classList[3] == "not-build" && buildMode == true && canBuildBarracks == true) {
             console.log("можем строить")
             mediumBuildings_img[i].classList.add("possible-barracks")
             mediumBuildings_img[i].classList.add("grayscale")
 
-        } else if (mediumBuildings[i].classList[3] == "not-build" && buildModeHidden == false) {
+        } else if (mediumBuildings[i].classList[3] == "not-build" && buildMode == false) {
 
             mediumBuildings_img[i].classList.remove("possible-barracks")
             mediumBuildings_img[i].classList.remove("grayscale")
@@ -2297,27 +2309,27 @@ function showBarracksImg() {
 function showHouseImg() {
     var tinyBuildings = document.getElementsByClassName("building-tiny");
     var tinyBuildings_img = document.getElementsByClassName("building-tiny_img");
-
+    debugger
     //house
     for (let i = 0; i < tinyBuildings.length; i++) {
-        if (tinyBuildings[i].classList[3] == "not-build" && buildModeHidden == true && canBuildHouse == true) {
+        if (tinyBuildings[i].classList[3] == "not-build" && canBuildHouse == true && buildMode) {
             console.log("можем строить")
             tinyBuildings_img[i].classList.add("possible-house")
             tinyBuildings_img[i].classList.add("grayscale")
 
-        } else if (tinyBuildings[i].classList[3] == "not-build" && buildModeHidden == false) {
+        } else if (tinyBuildings[i].classList[3] == "not-build" && !buildMode) {
 
             tinyBuildings_img[i].classList.remove("possible-house")
             tinyBuildings_img[i].classList.remove("grayscale")
         }
         //field
 
-        if (tinyBuildings[i].classList[3] == "not-build" && buildModeHidden == true && canBuildField == true) {
+        if (tinyBuildings[i].classList[3] == "not-build" && buildMode && canBuildField == true) {
             console.log("можем строить")
 
             tinyBuildings_img[i].classList.add("possible-field")
             tinyBuildings_img[i].classList.add("grayscale")
-        } else if (tinyBuildings[i].classList[3] == "not-build" && buildModeHidden == false) {
+        } else if (tinyBuildings[i].classList[3] == "not-build" && buildMode == false) {
             tinyBuildings_img[i].classList.remove("possible-field")
             tinyBuildings_img[i].classList.remove("grayscale")
         }
@@ -2349,15 +2361,17 @@ var mediumBuildingSites = document.querySelectorAll("img.building-medium_img");
             var unitNumber = spot.replace(/[a-z]/gi, '')
             console.log(unitNumber)
 
-            buildModeHidden = false;
+
+
             let buildingsInterface = document.getElementsByClassName("buildings-wrapper")[0]
             buildingsInterface.classList.toggle("hidden")
 
             let mainInterface = document.getElementsByClassName("main-controls")[0]
             mainInterface.classList.toggle("hidden")
+                //вместе два
+            buildModeHidden = false;
+            cancelBuildMedium()
 
-
-            showBarracksImg()
 
             createWorker(
                 pointsToBuilding.initWorkerPos.topPoint,
@@ -2405,7 +2419,7 @@ var tinyBuildingSites = document.querySelectorAll("img.building-tiny_img");
             var unitNumber = spot.replace(/[a-z]/gi, '')
             console.log(unitNumber)
 
-            buildModeHidden = false;
+
 
             let buildingsInterface = document.getElementsByClassName("buildings-wrapper")[0]
             buildingsInterface.classList.toggle("hidden")
@@ -2413,7 +2427,11 @@ var tinyBuildingSites = document.querySelectorAll("img.building-tiny_img");
             let mainInterface = document.getElementsByClassName("main-controls")[0]
             mainInterface.classList.toggle("hidden")
 
-            showHouseImg()
+            //вместе два
+            buildModeHidden = false;
+            cancelBuildTiny()
+
+
             buildTiny = true;
             createWorker(
                 pointsToBuilding.initWorkerPos.topPoint,
@@ -2457,14 +2475,13 @@ var tinyBuildingSites = document.querySelectorAll("img.building-tiny_img");
             let mainInterface = document.getElementsByClassName("main-controls")[0]
             mainInterface.classList.toggle("hidden")
 
-            showHouseImg()
+            cancelBuildTiny()
             buildField = true;
 
             createWorker(
                 pointsToBuilding.initWorkerPos.topPoint,
                 pointsToBuilding.initWorkerPos.leftPoint,
                 "w", unitNumber, "idle")
-
             startIntervalPeasant(
                 e,
                 pointsToBuilding[spot].topPoint_1,
@@ -2615,14 +2632,14 @@ var pointsToBuilding = {
         topPoint: 850
     },
     spot5: {
-        topPoint_1: 1060,
+        topPoint_1: 1122,
         leftPoint_1: 637,
 
-        topPoint_2: 1060,
-        leftPoint_2: 690,
+        topPoint_2: 1122,
+        leftPoint_2: 422,
 
-        topPoint_3: 1160,
-        leftPoint_3: 690,
+        topPoint_3: 1080,
+        leftPoint_3: 422,
     },
     spot6: {
         topPoint_1: 1060,
@@ -2686,14 +2703,21 @@ function startIntervalRevPeasant(event, left, top) {
 
 function startIntervalPeasant(event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPoint3, leftPoint3, unitNumber, workType, spot, reverse) {
     // Store the id of the interval so we can clear it later
-    id_array_workers[unitNumber] = setInterval(movementtest.bind(window, event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPoint3, leftPoint3, unitNumber, workType, spot, reverse), 66)
+    id_array_workers[unitNumber] = setInterval(movementBuild.bind(window, event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPoint3, leftPoint3, unitNumber, workType, spot, reverse), 66)
 }
 //для ручного теста
 var iSAY = false;
 
 var id_array_workers = []
 
-function movementtest(event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPoint3, leftPoint3, unitNumber, workType, spot, reverse) {
+function startIntervalPeasantFood(event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPoint3, leftPoint3, unitNumber, workType, spot, initialPosTop, initialPosLeft, reverse) {
+    // Store the id of the interval so we can clear it later
+    id_array_food_workers[unitNumber] = setInterval(movementFood.bind(window, event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPoint3, leftPoint3, unitNumber, workType, spot, initialPosTop, initialPosLeft, reverse), 66)
+}
+
+var id_array_food_workers = []
+
+function movementBuild(event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPoint3, leftPoint3, unitNumber, workType, spot, reverse) {
     // console.log(unitsNow)
     var movementPoint1Top = topPoint1;
     var movementPointLeft1 = leftPoint1;
@@ -2859,7 +2883,7 @@ function movementtest(event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPo
                     humanImage.classList.remove("worker-build-n");
                     setTimeout(() => {
                         spotBuildingsState[unitN] = true
-                        startIntervalPeasant(event, topPoint2, leftPoint2, topPoint1, leftPoint1, pointsToBuilding.initWorkerPos.topPoint, pointsToBuilding.initWorkerPos.leftPoint, unitNumber, workType, true)
+                        startIntervalPeasant(event, topPoint2, leftPoint2, topPoint1, leftPoint1, pointsToBuilding.initWorkerPos.topPoint, pointsToBuilding.initWorkerPos.leftPoint, unitNumber, workType, spot, true)
                         console.log("Обратный интервал");
 
                         console.log("Достроилось")
@@ -2915,7 +2939,8 @@ function movementtest(event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPo
                         toggleBuild()
                         console.log("Достроилось")
                             //старт интервала на перенос и копание
-                        spawnFieldWorker(buildingSpot)
+                        startFoodProdaction(spot)
+
                     }, 2000);
                 }, 5000);
             }, 1000);
@@ -2954,6 +2979,254 @@ function movementtest(event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPo
 
 }
 
+function movementFood(event, topPoint1, leftPoint1, topPoint2, leftPoint2, topPoint3, leftPoint3, unitNumber, workType, spot, initialPosTop, initialPosLeft, reverse) {
+
+    // function timer(v) {
+    //     return new Promise(function(r) {
+    //         return setTimeout(r, v);
+    //     });
+    // }
+
+    var unitN = parseInt(unitNumber)
+    if (!changePointsTogglerKeys[unitN].spawned_to_field) {
+
+        spawnFieldWorker(spot, unitNumber)
+        changePointsTogglerKeys[unitN].spawned_to_field = true
+            // await timer(10000);
+    }
+    // console.log(unitsNow)
+    var movementPoint1Top = topPoint1;
+    var movementPointLeft1 = leftPoint1;
+    var movementPoint2Top = topPoint2;
+    var movementPointLeft2 = leftPoint2;
+    var movementPoint3Top = topPoint3;
+    var movementPointLeft3 = leftPoint3;
+    var buildingSpot = spot;
+
+
+
+    //её рили нужно переделать под 3-4 поинта посмотри ту, которая для боевых
+    var genName = `humans${unitNumber} worker`;
+    var human = document.getElementsByClassName(genName)[0];
+    var genName2 = `humans${unitNumber}_worker_unit`;
+    var humanImage = document.getElementsByClassName(genName2)[0];
+
+
+    var computedStyleArmy = getComputedStyle(human);
+
+    var unitTop = parseInt(computedStyleArmy.top) //1007
+    var unitLeft = parseInt(computedStyleArmy.left) //637
+
+
+
+    //setTimeout на время копания
+
+
+
+    if (!changePointsTogglerKeys[unitN].spawned) {
+
+        var direction = makeDirection()
+        removeUnit(human)
+        createWorker(
+            initialPosTop,
+            initialPosLeft,
+            direction,
+            unitN,
+            "walk"
+        )
+        changePointsTogglerKeys[unitN].spawned = true;
+    }
+
+    changePointsTogglerKeys[unitN]
+    if (((topPoint1 < unitTop || topPoint1 > unitTop) || (leftPoint1 < unitLeft || leftPoint1 > unitLeft)) && !changePointsTogglerKeys[unitN][1]) {
+        changePointsTogglerKeys[unitN][1] = false;
+        var changePoints1 = changeMovePoints(
+                topPoint1,
+                leftPoint1,
+                unitTop,
+                unitLeft,
+                1)
+            // console.log(unitN + " FIRST POINT")
+        let changePointsClearSide = changePoints1.replace(/[0-9]/gi, '')
+        if (changePoints1 == "s1") {
+            humanImage.classList.remove(humanImage.classList.item(1))
+            humanImage.classList.add(`worker-${workType}-${changePointsClearSide}`);
+            armyMovements.movement_bottom(human, movementPoint1Top);
+            // console.log("S")
+        } else if (changePoints1 == "n1") {
+            humanImage.classList.remove(humanImage.classList.item(1))
+            humanImage.classList.add(`worker-${workType}-${changePointsClearSide}`);
+            armyMovements.movement_top(human, movementPoint1Top);
+            // console.log("N")
+        } else if (changePoints1 == "e1") {
+            humanImage.classList.remove(humanImage.classList.item(1))
+            humanImage.classList.add(`worker-${workType}-${changePointsClearSide}`);
+            armyMovements.movement_left(human, movementPointLeft1);
+            // console.log("E")
+        } else if (changePoints1 == "w1") {
+            humanImage.classList.remove(humanImage.classList.item(1))
+            humanImage.classList.add(`worker-${workType}-${changePointsClearSide}`);
+            armyMovements.movement_right(human, movementPointLeft1);
+            // console.log("W")
+        }
+    } else {
+        changePointsTogglerKeys[unitN][1] = true;
+    }
+    if (changePointsTogglerKeys[unitN][1] && !changePointsTogglerKeys[unitN][2] && !changePointsTogglerKeys[unitN][3]) {
+        var changePoints2 = changeMovePoints(
+                topPoint2,
+                leftPoint2,
+                unitTop,
+                unitLeft,
+                2)
+            // console.log(unitN + " SECOND POINT")
+            // } else if (!changePointsTogglerKeys[unitN][3] && changePointsTogglerKeys[unitN][2] && changePointsTogglerKeys[unitN][1]) {
+        if (changePoints2 != undefined) {
+            let changePointsClearSide = changePoints2.replace(/[0-9]/gi, '')
+
+
+            if (changePoints2 == "s2") {
+                humanImage.classList.remove(humanImage.classList.item(1))
+                humanImage.classList.add(`worker-${workType}-${changePointsClearSide}`);
+                armyMovements.movement_bottom(human, movementPoint2Top);
+                // console.log("S2")
+            } else if (changePoints2 == "n2") {
+                humanImage.classList.remove(humanImage.classList.item(1))
+                humanImage.classList.add(`worker-${workType}-${changePointsClearSide}`);
+                armyMovements.movement_top(human, movementPoint2Top);
+                // console.log("N2")
+            } else if (changePoints2 == "e2") {
+                humanImage.classList.remove(humanImage.classList.item(1))
+                humanImage.classList.add(`worker-${workType}-${changePointsClearSide}`);
+                armyMovements.movement_right(human, movementPointLeft2);
+                // console.log("E2")
+            } else if (changePoints2 == "w2") {
+                humanImage.classList.remove(humanImage.classList.item(1))
+                humanImage.classList.add(`worker-${workType}-${changePointsClearSide}`);
+                armyMovements.movement_left(human, movementPointLeft2);
+                // console.log("W2")
+            }
+        } else {
+            changePointsTogglerKeys[unitN][2] = true;
+        }
+
+    }
+
+    if (changePointsTogglerKeys[unitN][2] && changePointsTogglerKeys[unitN][1] && !changePointsTogglerKeys[unitN][3]) {
+        var changePoints3 = changeMovePoints(
+                topPoint3,
+                leftPoint3,
+                unitTop,
+                unitLeft,
+                3)
+            // console.log(unitN + " THIRD POINT")
+            // } else if (!changePointsTogglerKeys[unitN][3] && changePointsTogglerKeys[unitN][2] && changePointsTogglerKeys[unitN][1]) {
+        if (changePoints3 != undefined) {
+            let changePointsClearSide = changePoints3.replace(/[0-9]/gi, '')
+            if (changePoints3 == "s3") {
+                humanImage.classList.remove(humanImage.classList.item(1))
+                humanImage.classList.add(`worker-${workType}-${changePointsClearSide}`);
+                armyMovements.movement_bottom(human, movementPoint3Top);
+                // console.log("S3")
+            } else if (changePoints3 == "n3") {
+                humanImage.classList.remove(humanImage.classList.item(1))
+                humanImage.classList.add(`worker-${workType}-${changePointsClearSide}`);
+                armyMovements.movement_top(human, movementPoint3Top);
+                // console.log("N3")
+            } else if (changePoints3 == "e3") {
+                humanImage.classList.remove(humanImage.classList.item(1))
+                humanImage.classList.add(`worker-${workType}-${changePointsClearSide}`);
+                armyMovements.movement_left(human, movementPointLeft3);
+                // console.log("E3")
+            } else if (changePoints3 == "w3") {
+                humanImage.classList.remove(humanImage.classList.item(1))
+                humanImage.classList.add(`worker-${workType}-${changePointsClearSide}`);
+                armyMovements.movement_right(human, movementPointLeft3);
+                // console.log("W3")
+            }
+        } else {
+            changePointsTogglerKeys[unitN][3] = true;
+            changePointsTogglerKeys[unitN].finished = true;
+        }
+    }
+
+    if (changePointsTogglerKeys[unitN].finished) {
+
+        // var result = id_array_workers.indexOf(intervalID)
+        clearInterval(id_array_food_workers[unitN])
+            // id_array_workers.splice(result, 1);
+
+        if (workType == "carry-food" && reverse == undefined) {
+            humanImage.classList.remove(humanImage.classList.item(1));
+            humanImage.classList.add("worker-idle-n");
+            humanImage.classList.add("worker-idle-n");
+            // !!
+            humanImage.classList.remove("worker--n");
+
+            food = food + 25
+
+            setTimeout(() => {
+                spotBuildingsState[unitN] = true
+
+                startIntervalPeasantFood(event, topPoint2, leftPoint2, topPoint1, leftPoint1, initialPosTop, initialPosLeft, unitNumber, "walk", spot, pointsToBuilding.initWorkerPos.topPoint, pointsToBuilding.initWorkerPos.leftPoint, true)
+                console.log("Обратный интервал");
+            }, 3000)
+            changePointsTogglerKeys[unitN][1] = false;
+            changePointsTogglerKeys[unitN][2] = false;
+            changePointsTogglerKeys[unitN][3] = false;
+            changePointsTogglerKeys[unitN][4] = false;
+            changePointsTogglerKeys[unitN].finished = false;
+            return
+        } else if ((workType == "walk" || workType == "carry-food") &&
+            reverse) {
+            debugger
+            clearInterval(id_array_food_workers[unitN])
+            console.log("finished interval else")
+            changePointsTogglerKeys[unitN][1] = false;
+            changePointsTogglerKeys[unitN][2] = false;
+            changePointsTogglerKeys[unitN][3] = false;
+            changePointsTogglerKeys[unitN][4] = false;
+            changePointsTogglerKeys[unitN].finished = false;
+            changePointsTogglerKeys[unitN].spawned_to_field = false;
+            humanImage.classList.remove(humanImage.classList.item(1))
+            humanImage.classList.add("worker-idle-e");
+            setTimeout(() => {
+                changePointsTogglerKeys[unitN].spawned = false;
+
+                removeUnit(human)
+
+                spawnFieldWorker(spot, unitNumber)
+
+                setTimeout(() => {
+                    removeUnit(human)
+                    createWorker(
+                        pointsToBuilding[spot].topPoint_3,
+                        pointsToBuilding[spot].leftPoint_3,
+                        direction,
+                        unitN,
+                        "walk"
+                    )
+                    startIntervalPeasantFood(event,
+                        pointsToBuilding[spot].topPoint_2,
+                        pointsToBuilding[spot].leftPoint_2,
+                        pointsToBuilding[spot].topPoint_1,
+                        pointsToBuilding[spot].leftPoint_1,
+                        pointsToBuilding.initWorkerPos.topPoint, pointsToBuilding.initWorkerPos.leftPoint, unitNumber, "carry-food", spot,
+                        pointsToBuilding[spot].topPoint_3,
+                        pointsToBuilding[spot].leftPoint_3)
+                    console.log("Обратный интервал");
+                }, timers.field);
+            }, 1500);
+            return
+        }
+    }
+
+}
+
+var timers = {
+    field: 30000
+}
+
 function makeDirection() {
     var text = "";
     var possible = "news";
@@ -2964,8 +3237,24 @@ function makeDirection() {
     return text;
 }
 
-function spawnFieldWorker(spot) {
-    debugger
+function startFoodProdaction(spot) {
+
+    let event = "dummy"
+    let unitNumber = spot.replace(/[a-z]/gi, '')
+    startIntervalPeasantFood(
+        event,
+        pointsToBuilding[spot].topPoint_2,
+        pointsToBuilding[spot].leftPoint_2,
+        pointsToBuilding[spot].topPoint_1,
+        pointsToBuilding[spot].leftPoint_1,
+        pointsToBuilding.initWorkerPos.topPoint, pointsToBuilding.initWorkerPos.leftPoint, unitNumber,
+        "carry-food",
+        spot,
+        pointsToBuilding[spot].topPoint_3,
+        pointsToBuilding[spot].leftPoint_3, )
+}
+
+function spawnFieldWorker(spot, unitNumber) {
     var site = document.getElementsByClassName(spot)[0];
     var siteTop = parseInt(window.getComputedStyle(site, null).getPropertyValue("top"));
     var siteleft = parseInt(window.getComputedStyle(site, null).getPropertyValue("left"));
@@ -2973,7 +3262,7 @@ function spawnFieldWorker(spot) {
 
     siteTop = siteTop + getRandomInt(10, 35)
     siteleft = siteleft + getRandomInt(10, 35)
-    var unitNumber = spot.replace(/[a-z]/gi, '')
+
     var direction = makeDirection()
     createWorker(
         siteTop,
@@ -2983,6 +3272,7 @@ function spawnFieldWorker(spot) {
         "dig"
     )
 }
+
 var pointChangeLock = false;
 
 var changePointsTogglerKeys = {
@@ -2991,42 +3281,49 @@ var changePointsTogglerKeys = {
         2: false,
         3: false,
         4: false,
-        finished: false
+        finished: false,
+        spawned: false
     },
     2: {
         1: false,
         2: false,
         3: false,
         4: false,
-        finished: false
+        finished: false,
+        spawned: false
     },
     3: {
         1: false,
         2: false,
         3: false,
         4: false,
-        finished: false
+        finished: false,
+        spawned: false
     },
     4: {
         1: false,
         2: false,
         3: false,
         4: false,
-        finished: false
+        finished: false,
+        spawned: false,
+        spawned_to_field: false
     },
     5: {
         1: false,
         2: false,
         3: false,
         4: false,
-        finished: false
+        finished: false,
+        spawned: false
     },
     6: {
         1: false,
         2: false,
         3: false,
         4: false,
-        finished: false
+        finished: false,
+        spawned: false
     },
     7: false,
     8: false,
@@ -3412,86 +3709,86 @@ var code = "";
 var prevPointTop = 0;
 var prevPointLeft = 0;
 //указатель координат
-// var lands = document.getElementsByClassName("mainLands")[0];
-// lands.addEventListener("mousemove", function(event) {
-//     var position = "top Coord: " + event.offsetX + " left Coord: " + event.offsetY;
-//     let block = document.getElementsByClassName("coordinates")[0]
-//     let block2 = document.getElementsByClassName("coordinates2")[0]
+var lands = document.getElementsByClassName("mainLands")[0];
+lands.addEventListener("mousemove", function(event) {
+    var position = "top Coord: " + event.offsetX + " left Coord: " + event.offsetY;
+    let block = document.getElementsByClassName("coordinates")[0]
+    let block2 = document.getElementsByClassName("coordinates2")[0]
 
-//     if (prevPointTop == event.offsetY) {
-//         block.style.backgroundColor = "#d6e00d"
-//         console.log("по ТОПУ выровнялся")
-//     } else if (prevPointLeft == event.offsetX) {
-//         console.log("по ЛЕФТУ выровнялся")
-//         block2.style.backgroundColor = "#d6e00d"
-//     }
-// })
+    if (prevPointTop == event.offsetY) {
+        block.style.backgroundColor = "#d6e00d"
+        console.log("по ТОПУ выровнялся")
+    } else if (prevPointLeft == event.offsetX) {
+        console.log("по ЛЕФТУ выровнялся")
+        block2.style.backgroundColor = "#d6e00d"
+    }
+})
 
-// lands.addEventListener("click", function(event) {
+lands.addEventListener("click", function(event) {
 
-//     if (counter == 0) {
-//         let div = document.createElement("div");
-//         div.className = `coordinates ${event.offsetY} and ${event.offsetX}`;
-//         let parent = document.getElementsByClassName("mainLands")[0];
-//         parent.append(div);
-//         let block = document.getElementsByClassName("coordinates")[0]
+    if (counter == 0) {
+        let div = document.createElement("div");
+        div.className = `coordinates ${event.offsetY} and ${event.offsetX}`;
+        let parent = document.getElementsByClassName("mainLands")[0];
+        parent.append(div);
+        let block = document.getElementsByClassName("coordinates")[0]
 
-//         let div2 = document.createElement("div");
-//         div2.className = `coordinates2 ${event.offsetY} and ${event.offsetX}`;
-//         let parent2 = document.getElementsByClassName("mainLands")[0];
-//         parent2.append(div2);
-//         let block2 = document.getElementsByClassName("coordinates2")[0]
-
-
-//         block.style.top = event.offsetY + "px"
-//         block.style.left = event.offsetX + "px"
-
-//         block2.style.top = event.offsetY + "px"
-//         block2.style.left = event.offsetX + "px"
-
-//         code = `
-//         spot: {
-//             topPoint_1: ${event.offsetY + 20},
-//             leftPoint_1: ${event.offsetX + 11},
-//         `
-//         counter++
-//         console.log(code, counter);
-//         prevPointTop = event.offsetY
-//         prevPointLeft = event.offsetX
-//     } else if (counter == 1) {
-
-//         code = code + `
-//         topPoint_2: ${event.offsetY+ 20},
-//         leftPoint_2: ${event.offsetX+ 11},
-//         `
-//         counter++
-//         console.log(code, counter);
-//         prevPointTop = event.offsetY
-//         prevPointLeft = event.offsetX
-//     } else if (counter == 2) {
-//         code = code + `
-//         topPoint_3: ${event.offsetY+ 20},
-//             leftPoint_3: ${event.offsetX+ 11},
-//         `
-//         counter++
-//         console.log(code, counter);
-//         prevPointTop = event.offsetY
-//         prevPointLeft = event.offsetX
-//     } else if (counter == 3) {
-//         code = code + `
-//         topPoint_4: ${event.offsetY+ 20},
-//             leftPoint_4: ${event.offsetX+ 11},
-//     }
-//         `
-//         counter++
-//         console.log(code, counter);
-//         prevPointTop = event.offsetY
-//         prevPointLeft = event.offsetX
-//     }
+        let div2 = document.createElement("div");
+        div2.className = `coordinates2 ${event.offsetY} and ${event.offsetX}`;
+        let parent2 = document.getElementsByClassName("mainLands")[0];
+        parent2.append(div2);
+        let block2 = document.getElementsByClassName("coordinates2")[0]
 
 
+        block.style.top = event.offsetY + "px"
+        block.style.left = event.offsetX + "px"
 
-// });
+        block2.style.top = event.offsetY + "px"
+        block2.style.left = event.offsetX + "px"
+
+        code = `
+        spot: {
+            topPoint_1: ${event.offsetY + 20},
+            leftPoint_1: ${event.offsetX + 11},
+        `
+        counter++
+        console.log(code, counter);
+        prevPointTop = event.offsetY
+        prevPointLeft = event.offsetX
+    } else if (counter == 1) {
+
+        code = code + `
+        topPoint_2: ${event.offsetY+ 20},
+        leftPoint_2: ${event.offsetX+ 11},
+        `
+        counter++
+        console.log(code, counter);
+        prevPointTop = event.offsetY
+        prevPointLeft = event.offsetX
+    } else if (counter == 2) {
+        code = code + `
+        topPoint_3: ${event.offsetY+ 20},
+            leftPoint_3: ${event.offsetX+ 11},
+        `
+        counter++
+        console.log(code, counter);
+        prevPointTop = event.offsetY
+        prevPointLeft = event.offsetX
+    } else if (counter == 3) {
+        code = code + `
+        topPoint_4: ${event.offsetY+ 20},
+            leftPoint_4: ${event.offsetX+ 11},
+    }
+        `
+        counter++
+        console.log(code, counter);
+        prevPointTop = event.offsetY
+        prevPointLeft = event.offsetX
+    }
+
+
+
+});
 
 //ресурсы
 
@@ -3503,8 +3800,8 @@ var food = 500;
 const showresources = setInterval(() => {
     let goldValue = document.getElementsByClassName("gold")[0]
     let woodValue = document.getElementsByClassName("wood")[0]
-    let stoneValue = document.getElementsByClassName("food")[0]
-    let foodValue = document.getElementsByClassName("stone")[0]
+    let stoneValue = document.getElementsByClassName("stone")[0]
+    let foodValue = document.getElementsByClassName("food")[0]
     let unitsValue = document.getElementsByClassName("units")[0]
     goldValue.innerHTML = gold;
     woodValue.innerHTML = wood;
@@ -3777,6 +4074,8 @@ function returnToMain(event) {
 
 function buildState() {
     toggleBuild()
+
+    buildMode = true;
     var buildInterface = document.getElementsByClassName("buildings-wrapper")[0]
 
     buildInterface.classList.toggle("hidden")

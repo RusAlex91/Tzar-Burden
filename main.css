@@ -517,6 +517,18 @@ body {
     position: absolute;
 }
 
+.spot70 {
+    top: 1000px;
+    left: 980px;
+    position: absolute;
+}
+
+.spot71 {
+    top: 1000px;
+    left: 1100px;
+    position: absolute;
+}
+
 .possible-barracks {
     content: url("Buildings/Barracks.png");
 }
@@ -739,4 +751,32 @@ body {
 
 .buildProsesessField_stadia4 {
     content: url("Buildings/field/grow/grow (4).png");
+}
+
+.gold-resourse {
+    content: url("resources/gold.png");
+    cursor: pointer;
+}
+
+.gold-resourse-active {
+    content: url("resources/gold-highlighted.png");
+    cursor: pointer;
+}
+
+.stone-resourse {
+    content: url("resources/stone.png");
+    cursor: pointer;
+}
+
+.stone-resourse-active {
+    content: url("resources/stone-highlighted.png");
+    cursor: pointer;
+}
+
+.gold-depleted {
+    content: url("resources/gold-depleted.png");
+}
+
+.stone-depleted {
+    content: url("resources/stone-depleted.png");
 }
